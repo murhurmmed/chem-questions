@@ -870,6 +870,21 @@ function shuffle(arr){
   return a;
 }
 
+function prepareQuestion(q) {
+  const shuffledChoices = shuffle(
+    q.choices.map((text, index) => ({
+      text,
+      isCorrect: index === q.correct
+    }))
+  );
+
+  return {
+    ...q,
+    choices: shuffledChoices.map(choice => choice.text),
+    correct: shuffledChoices.findIndex(choice => choice.isCorrect)
+  };
+}
+
 function startQuiz(){
   const pool=ALL_QUESTIONS.filter(q=>selectedTopics.has(q.topic));
   if(!pool.length){alert('Please select at least one topic!');return;}
