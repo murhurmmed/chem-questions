@@ -873,7 +873,7 @@ function startQuiz(){
   const pool=ALL_QUESTIONS.filter(q=>selectedTopics.has(q.topic));
   if(!pool.length){alert('Please select at least one topic!');return;}
   const count=Math.min(selectedNum,pool.length);
-  quizQuestions=shuffle(pool).slice(0,count);
+ quizQuestions=shuffle(pool).slice(0,count).map(prepareQuestion);
   currentIdx=0;score=0;answered=false;
   document.getElementById('setup-screen').style.display='none';
   document.getElementById('quiz-screen').style.display='block';
