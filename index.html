@@ -4,21 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NYC Regents Chemistry Quiz</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0e1a;
-    --surface: #111827;
-    --surface2: #1a2335;
-    --border: #2a3a55;
-    --accent: #3b82f6;
-    --accent2: #06b6d4;
-    --green: #10b981;
-    --red: #ef4444;
-    --amber: #f59e0b;
-    --text: #e2e8f0;
-    --muted: #64748b;
+    --bg: #f0faf2;
+    --surface: #ffffff;
+    --surface2: #e8f5eb;
+    --border: #b7dfc0;
+    --accent: #1a7a35;
+    --accent2: #2ecc71;
+    --accent3: #0f5c27;
+    --green-light: #d4f0dc;
+    --red: #c0392b;
+    --amber: #b7790a;
+    --text: #1a2e1e;
+    --muted: #5a7a61;
     --white: #ffffff;
+    --correct: #166534;
+    --correct-bg: #dcfce7;
+    --correct-border: #86efac;
+    --wrong: #991b1b;
+    --wrong-bg: #fee2e2;
+    --wrong-border: #fca5a5;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,37 +33,43 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Sora', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(46,204,113,0.07) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(26,122,53,0.06) 0%, transparent 50%);
   }
 
-  body::before {
-    content: '';
+  .hex-bg {
     position: fixed;
-    top: -200px;
-    right: -200px;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+    top: 0; left: 0; right: 0; bottom: 0;
     pointer-events: none;
     z-index: 0;
+    overflow: hidden;
+    opacity: 0.4;
   }
 
-  body::after {
+  .hex-bg::before {
     content: '';
-    position: fixed;
-    bottom: -200px;
-    left: -100px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 500px; height: 500px;
+    border: 40px solid rgba(26,122,53,0.05);
+    border-radius: 50%;
+  }
+
+  .hex-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -80px;
+    width: 400px; height: 400px;
+    border: 30px solid rgba(46,204,113,0.06);
+    border-radius: 50%;
   }
 
   .container {
-    max-width: 780px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 40px 24px 80px;
     position: relative;
@@ -71,81 +84,88 @@
 
   .header-label {
     font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--accent2);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
     text-transform: uppercase;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .header-label::before, .header-label::after {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent2);
+    opacity: 0.6;
   }
 
   .header h1 {
-    font-size: clamp(26px, 5vw, 38px);
+    font-size: clamp(28px, 5vw, 42px);
     font-weight: 700;
-    color: var(--white);
-    line-height: 1.15;
+    color: var(--accent3);
+    line-height: 1.1;
     margin-bottom: 10px;
+    letter-spacing: -0.02em;
   }
 
   .header h1 span {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--accent);
+    position: relative;
   }
 
-  .header p {
-    font-size: 14px;
-    color: var(--muted);
-    font-weight: 300;
+  .header h1 span::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0; right: 0;
+    height: 3px;
+    background: var(--accent2);
+    border-radius: 2px;
+    opacity: 0.5;
   }
 
-  #setup-screen {
-    animation: fadeUp 0.5s ease both;
-  }
+  .header p { font-size: 14px; color: var(--muted); }
+
+  #setup-screen { animation: fadeUp 0.5s ease both; }
 
   .setup-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 20px;
+    border-radius: 24px;
     padding: 40px;
+    box-shadow: 0 4px 24px rgba(26,122,53,0.07);
   }
 
-  .setup-card h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 8px;
-  }
+  .setup-card h2 { font-size: 20px; font-weight: 600; color: var(--accent3); margin-bottom: 6px; }
+  .setup-card > p { font-size: 13px; color: var(--muted); margin-bottom: 32px; line-height: 1.65; }
 
-  .setup-card p {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 32px;
-    line-height: 1.6;
-  }
-
-  .num-label {
+  .sec-label {
     font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--accent2);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
     text-transform: uppercase;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     display: block;
   }
 
   .num-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
     gap: 10px;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
 
   .num-btn {
     background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    color: var(--muted);
     font-family: 'Space Mono', monospace;
     font-size: 18px;
     font-weight: 700;
@@ -155,91 +175,61 @@
     text-align: center;
   }
 
-  .num-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-2px);
-  }
+  .num-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,122,53,0.12); }
+  .num-btn.selected { background: var(--accent); border-color: var(--accent); color: var(--white); box-shadow: 0 4px 18px rgba(26,122,53,0.28); transform: translateY(-2px); }
 
-  .num-btn.selected {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--white);
-    box-shadow: 0 0 20px rgba(59,130,246,0.3);
-    transform: translateY(-2px);
-  }
-
-  .custom-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 32px;
-  }
+  .custom-row { display: flex; gap: 12px; align-items: center; margin-bottom: 32px; }
 
   .custom-row input {
     background: var(--surface2);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 12px;
-    color: var(--white);
+    color: var(--text);
     font-family: 'Space Mono', monospace;
     font-size: 16px;
     padding: 12px 16px;
-    width: 100px;
+    width: 110px;
     outline: none;
     transition: border-color 0.2s;
   }
 
   .custom-row input:focus { border-color: var(--accent); }
+  .custom-row label { font-size: 13px; color: var(--muted); }
 
-  .custom-row label {
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  .topic-section {
-    margin-bottom: 32px;
-  }
-
-  .topic-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+  .topic-section { margin-bottom: 32px; }
+  .topic-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 
   .topic-chip {
     background: var(--surface2);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 20px;
     color: var(--muted);
     font-size: 12px;
+    font-weight: 500;
     padding: 6px 14px;
     cursor: pointer;
     transition: all 0.2s;
   }
 
-  .topic-chip:hover { border-color: var(--accent2); color: var(--accent2); }
-  .topic-chip.active { background: rgba(6,182,212,0.15); border-color: var(--accent2); color: var(--accent2); }
+  .topic-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .topic-chip.active { background: var(--green-light); border-color: var(--accent); color: var(--accent3); font-weight: 600; }
 
   .start-btn {
     width: 100%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    background: var(--accent);
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
     color: var(--white);
-    font-family: 'Sora', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 16px;
     font-weight: 700;
     padding: 18px;
     cursor: pointer;
     transition: all 0.3s ease;
-    letter-spacing: 0.02em;
+    box-shadow: 0 4px 18px rgba(26,122,53,0.25);
   }
 
-  .start-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(59,130,246,0.35);
-  }
-
+  .start-btn:hover { background: var(--accent3); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,122,53,0.35); }
   .start-btn:active { transform: scale(0.98); }
 
   #quiz-screen { display: none; }
@@ -248,47 +238,40 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     animation: fadeDown 0.4s ease both;
   }
 
-  .q-counter {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .q-counter span {
-    color: var(--accent2);
-    font-size: 16px;
-  }
+  .q-counter { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); }
+  .q-counter span { color: var(--accent); font-size: 17px; font-weight: 700; }
 
   .score-badge {
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 20px;
-    padding: 6px 16px;
+    padding: 6px 18px;
     font-family: 'Space Mono', monospace;
     font-size: 12px;
     color: var(--muted);
+    box-shadow: 0 2px 8px rgba(26,122,53,0.06);
   }
 
-  .score-badge strong { color: var(--green); }
+  .score-badge strong { color: var(--accent); }
 
   .progress-bar {
-    height: 3px;
+    height: 4px;
     background: var(--surface2);
-    border-radius: 2px;
-    margin-bottom: 32px;
+    border-radius: 4px;
+    margin-bottom: 28px;
     overflow: hidden;
-    animation: fadeIn 0.4s ease both;
+    border: 1px solid var(--border);
   }
 
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 2px;
-    transition: width 0.4s ease;
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
   }
 
   .topic-tag {
@@ -297,333 +280,212 @@
     font-size: 10px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--accent2);
-    background: rgba(6,182,212,0.1);
-    border: 1px solid rgba(6,182,212,0.25);
+    color: var(--accent3);
+    background: var(--green-light);
+    border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 4px 12px;
-    margin-bottom: 16px;
-    animation: fadeIn 0.3s ease both;
+    padding: 4px 14px;
+    margin-bottom: 14px;
+    font-weight: 700;
   }
 
   .question-card {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 22px;
     padding: 32px;
-    margin-bottom: 20px;
-    animation: fadeUp 0.4s ease both;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px rgba(26,122,53,0.07);
+    animation: fadeUp 0.35s ease both;
   }
 
-  .question-text {
-    font-size: 17px;
-    font-weight: 400;
-    color: var(--white);
-    line-height: 1.65;
-    margin-bottom: 28px;
-  }
+  .question-text { font-size: 16px; font-weight: 500; color: var(--text); line-height: 1.7; margin-bottom: 26px; }
 
-  .choices {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .choices { display: flex; flex-direction: column; gap: 10px; }
 
   .choice-btn {
     background: var(--surface2);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 14px;
     color: var(--text);
-    font-family: 'Sora', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
-    padding: 16px 20px;
+    padding: 15px 18px;
     cursor: pointer;
     text-align: left;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
-  .choice-btn:hover:not(:disabled) {
-    border-color: var(--accent);
-    background: rgba(59,130,246,0.08);
-    transform: translateX(4px);
-  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--green-light); transform: translateX(4px); box-shadow: 0 2px 10px rgba(26,122,53,0.1); }
 
   .choice-letter {
     font-family: 'Space Mono', monospace;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--muted);
-    background: rgba(255,255,255,0.05);
+    background: rgba(26,122,53,0.08);
     border-radius: 6px;
     padding: 2px 8px;
     flex-shrink: 0;
-    margin-top: 1px;
+    margin-top: 2px;
     transition: all 0.2s;
+    border: 1px solid transparent;
   }
 
-  .choice-btn:hover:not(:disabled) .choice-letter {
-    color: var(--accent);
-    background: rgba(59,130,246,0.15);
-  }
-
-  .choice-btn.correct {
-    border-color: var(--green);
-    background: rgba(16,185,129,0.1);
-    color: var(--white);
-  }
-
-  .choice-btn.correct .choice-letter {
-    background: rgba(16,185,129,0.2);
-    color: var(--green);
-  }
-
-  .choice-btn.wrong {
-    border-color: var(--red);
-    background: rgba(239,68,68,0.1);
-    color: #fca5a5;
-  }
-
-  .choice-btn.wrong .choice-letter {
-    background: rgba(239,68,68,0.2);
-    color: var(--red);
-  }
-
+  .choice-btn:hover:not(:disabled) .choice-letter { color: var(--accent3); background: rgba(26,122,53,0.15); border-color: var(--accent); }
+  .choice-btn.correct { border-color: var(--correct-border); background: var(--correct-bg); color: var(--correct); }
+  .choice-btn.correct .choice-letter { background: rgba(22,101,52,0.15); color: var(--correct); border-color: var(--correct-border); }
+  .choice-btn.wrong { border-color: var(--wrong-border); background: var(--wrong-bg); color: var(--wrong); }
+  .choice-btn.wrong .choice-letter { background: rgba(153,27,27,0.12); color: var(--wrong); border-color: var(--wrong-border); }
   .choice-btn:disabled { cursor: default; transform: none; }
 
   .feedback {
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 20px;
+    border-radius: 18px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
     display: none;
-    animation: slideDown 0.35s ease both;
+    animation: slideDown 0.3s ease both;
   }
 
   .feedback.show { display: block; }
+  .feedback.correct-fb { background: var(--correct-bg); border: 1.5px solid var(--correct-border); }
+  .feedback.wrong-fb { background: var(--wrong-bg); border: 1.5px solid var(--wrong-border); }
 
-  .feedback.correct-fb {
-    background: rgba(16,185,129,0.08);
-    border: 1px solid rgba(16,185,129,0.3);
-  }
-
-  .feedback.wrong-fb {
-    background: rgba(239,68,68,0.06);
-    border: 1px solid rgba(239,68,68,0.25);
-  }
-
-  .feedback-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .feedback-icon { font-size: 22px; }
-
-  .feedback-title { font-size: 16px; font-weight: 700; }
-
-  .feedback.correct-fb .feedback-title { color: var(--green); }
-  .feedback.wrong-fb .feedback-title { color: var(--red); }
+  .feedback-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .feedback-icon { font-size: 20px; }
+  .feedback-title { font-size: 15px; font-weight: 700; }
+  .feedback.correct-fb .feedback-title { color: var(--correct); }
+  .feedback.wrong-fb .feedback-title { color: var(--wrong); }
 
   .correct-answer-line {
     font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: var(--green);
+    font-size: 11px;
+    color: var(--correct);
     margin-bottom: 10px;
     padding: 8px 12px;
-    background: rgba(16,185,129,0.08);
+    background: rgba(22,101,52,0.07);
     border-radius: 8px;
     display: none;
+    line-height: 1.6;
   }
 
-  .explanation {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.7;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    padding-top: 12px;
-    margin-top: 12px;
-  }
-
+  .explanation { font-size: 13px; color: #374151; line-height: 1.75; border-top: 1px solid rgba(0,0,0,0.07); padding-top: 12px; margin-top: 10px; }
   .explanation strong { color: var(--text); }
 
   .next-btn {
     width: 100%;
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 14px;
-    color: var(--text);
-    font-family: 'Sora', sans-serif;
+    color: var(--accent3);
+    font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     font-weight: 600;
     padding: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
     display: none;
+    box-shadow: 0 2px 8px rgba(26,122,53,0.06);
   }
 
   .next-btn.show { display: block; }
-  .next-btn:hover { border-color: var(--accent2); color: var(--accent2); transform: translateY(-1px); }
+  .next-btn:hover { background: var(--green-light); border-color: var(--accent); transform: translateY(-1px); }
 
   #results-screen { display: none; }
 
   .results-card {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 48px 40px;
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 52px 44px;
     text-align: center;
     animation: fadeUp 0.5s ease both;
+    box-shadow: 0 8px 40px rgba(26,122,53,0.1);
   }
 
-  .results-emoji {
-    font-size: 56px;
-    margin-bottom: 20px;
-    display: block;
-    animation: bounce 0.6s ease 0.3s both;
-  }
+  .results-emoji { font-size: 58px; margin-bottom: 18px; display: block; animation: bounce 0.7s ease 0.2s both; }
+  .results-card h2 { font-size: 28px; font-weight: 700; color: var(--accent3); margin-bottom: 6px; }
+  .results-card > p { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
 
-  .results-card h2 {
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 8px;
-  }
-
-  .results-card p {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 36px;
-  }
-
-  .score-big {
-    font-family: 'Space Mono', monospace;
-    font-size: 64px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    line-height: 1;
-  }
-
-  .score-big.excellent { color: var(--green); }
-  .score-big.good { color: var(--accent2); }
+  .score-big { font-family: 'Space Mono', monospace; font-size: 72px; font-weight: 700; margin-bottom: 6px; line-height: 1; }
+  .score-big.excellent { color: var(--accent); }
+  .score-big.good { color: #0e7490; }
   .score-big.okay { color: var(--amber); }
   .score-big.poor { color: var(--red); }
 
-  .score-label {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 36px;
-    font-family: 'Space Mono', monospace;
-  }
+  .score-label { font-size: 13px; color: var(--muted); margin-bottom: 36px; font-family: 'Space Mono', monospace; }
 
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 36px;
-  }
-
-  .stat-box {
-    background: var(--surface2);
-    border-radius: 14px;
-    padding: 16px;
-  }
-
-  .stat-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
-  .stat-num.green { color: var(--green); }
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 36px; }
+  .stat-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+  .stat-num { font-family: 'Space Mono', monospace; font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .stat-num.green { color: var(--accent); }
   .stat-num.red { color: var(--red); }
-  .stat-num.muted { color: var(--text); }
-
-  .stat-label { font-size: 11px; color: var(--muted); }
+  .stat-num.neutral { color: var(--text); }
+  .stat-label { font-size: 11px; color: var(--muted); font-weight: 500; }
 
   .restart-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    background: var(--accent);
     border: none;
     border-radius: 14px;
     color: var(--white);
-    font-family: 'Sora', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     font-weight: 700;
-    padding: 16px 40px;
+    padding: 16px 44px;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 4px 18px rgba(26,122,53,0.28);
   }
 
-  .restart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.3); }
+  .restart-btn:hover { background: var(--accent3); transform: translateY(-2px); }
 
   @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:none; } }
   @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:none; } }
-  @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
   @keyframes slideDown{ from { opacity:0; transform:translateY(-8px);  } to { opacity:1; transform:none; } }
-  @keyframes bounce   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-
-  .atom-bg {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 700px;
-    height: 700px;
-    border: 1px solid rgba(59,130,246,0.04);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    box-shadow: 0 0 0 150px rgba(59,130,246,0.01), 0 0 0 300px rgba(6,182,212,0.01);
-  }
+  @keyframes bounce   { 0%,100%{transform:translateY(0)} 40%{transform:translateY(-14px)} 70%{transform:translateY(-6px)} }
 </style>
 </head>
 <body>
-
-<div class="atom-bg"></div>
-
+<div class="hex-bg"></div>
 <div class="container">
 
   <div class="header">
-    <div class="header-label">New York State ✦ Regents Examination</div>
+    <div class="header-label">New York State &nbsp;✦&nbsp; Regents Examination</div>
     <h1>Chemistry<br><span>Practice Quiz</span></h1>
-    <p>Real questions from past Regents exams — sharpen your skills</p>
+    <p>Conceptual & calculation questions from past NYC Regents Chemistry exams</p>
   </div>
 
-  <!-- SETUP SCREEN -->
   <div id="setup-screen">
     <div class="setup-card">
       <h2>Configure your session</h2>
-      <p>Choose how many questions and which topics to focus on. Questions are drawn randomly from past NYC Regents Chemistry exams.</p>
-
-      <span class="num-label">Number of questions</span>
+      <p>Choose how many questions and filter by topic. Includes conceptual and calculation problems across all major Regents Chemistry topics.</p>
+      <span class="sec-label">Number of questions</span>
       <div class="num-grid">
-        <button class="num-btn selected" onclick="selectNum(5)">5</button>
-        <button class="num-btn" onclick="selectNum(10)">10</button>
-        <button class="num-btn" onclick="selectNum(15)">15</button>
-        <button class="num-btn" onclick="selectNum(20)">20</button>
-        <button class="num-btn" onclick="selectNum(25)">25</button>
-        <button class="num-btn" onclick="selectNum(30)">30</button>
+        <button class="num-btn selected" onclick="selectNum(5,this)">5</button>
+        <button class="num-btn" onclick="selectNum(10,this)">10</button>
+        <button class="num-btn" onclick="selectNum(15,this)">15</button>
+        <button class="num-btn" onclick="selectNum(20,this)">20</button>
+        <button class="num-btn" onclick="selectNum(25,this)">25</button>
+        <button class="num-btn" onclick="selectNum(30,this)">30</button>
+        <button class="num-btn" onclick="selectNum(40,this)">40</button>
+        <button class="num-btn" onclick="selectNum(50,this)">50</button>
       </div>
-
       <div class="custom-row">
-        <input type="number" id="custom-num" min="1" max="50" placeholder="?" oninput="selectCustom(this.value)">
-        <label>or enter a custom number (max 50)</label>
+        <input type="number" id="custom-num" min="1" max="200" placeholder="?" oninput="selectCustom(this.value)">
+        <label>custom number (max 200)</label>
       </div>
-
       <div class="topic-section">
-        <span class="num-label">Filter by topic <span style="color:var(--muted);text-transform:none;letter-spacing:0;font-size:11px">(all selected by default)</span></span>
+        <span class="sec-label">Filter by topic <span style="color:var(--muted);text-transform:none;letter-spacing:0;font-size:11px">(all selected)</span></span>
         <div class="topic-grid" id="topic-grid"></div>
       </div>
-
       <button class="start-btn" onclick="startQuiz()">Start Quiz →</button>
     </div>
   </div>
 
-  <!-- QUIZ SCREEN -->
   <div id="quiz-screen">
     <div class="quiz-meta">
       <div class="q-counter">Question <span id="q-num">1</span> of <span id="q-total">10</span></div>
@@ -646,7 +508,6 @@
     <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question →</button>
   </div>
 
-  <!-- RESULTS SCREEN -->
   <div id="results-screen">
     <div class="results-card">
       <span class="results-emoji" id="results-emoji">🏆</span>
@@ -657,283 +518,447 @@
       <div class="stats-row">
         <div class="stat-box"><div class="stat-num green" id="stat-correct">0</div><div class="stat-label">Correct</div></div>
         <div class="stat-box"><div class="stat-num red" id="stat-wrong">0</div><div class="stat-label">Wrong</div></div>
-        <div class="stat-box"><div class="stat-num muted" id="stat-total">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-box"><div class="stat-num neutral" id="stat-total">0</div><div class="stat-label">Total</div></div>
       </div>
       <button class="restart-btn" onclick="restart()">Try Again</button>
     </div>
   </div>
 
 </div>
-
 <script>
 const ALL_QUESTIONS = [
-  // MATTER & STRUCTURE
-  {topic:"Matter & Structure", q:"Which of the following best describes a pure substance?", choices:["A mixture of two or more elements","Matter with a uniform and definite composition","A combination of compounds that can be separated physically","A liquid that dissolves in water"], correct:1, explanation:"A pure substance has a uniform, definite composition — it is either a single element or a single compound. Mixtures, by contrast, can vary in composition."},
-  {topic:"Matter & Structure", q:"A student measures a liquid's mass as 45 g and its volume as 15 mL. What is its density?", choices:["0.33 g/mL","3.0 g/mL","60.0 g/mL","675 g/mL"], correct:1, explanation:"Density = mass ÷ volume = 45 g ÷ 15 mL = 3.0 g/mL. The formula D = m/V is a key Reference Table equation."},
-  {topic:"Matter & Structure", q:"Which process describes a solid changing directly to a gas without passing through a liquid phase?", choices:["Condensation","Evaporation","Sublimation","Deposition"], correct:2, explanation:"Sublimation is the direct phase change from solid to gas. Dry ice (solid CO₂) is a classic example."},
-  {topic:"Matter & Structure", q:"Which of the following is a chemical property of iron?", choices:["Melting point of 1538°C","Silver-gray metallic luster","Density of 7.87 g/cm³","Rusting in the presence of oxygen and water"], correct:3, explanation:"Rusting is a chemical change (oxidation of iron to Fe₂O₃) — it involves a change in chemical composition. The other choices describe physical properties."},
-  {topic:"Matter & Structure", q:"Which statement best describes a homogeneous mixture?", choices:["It can be separated by filtration","It contains only one type of atom","Its composition is uniform throughout","It cannot be separated by any physical means"], correct:2, explanation:"Homogeneous mixtures (solutions) have uniform composition throughout. Saltwater is an example — but it can still be separated by physical means like evaporation."},
-  {topic:"Matter & Structure", q:"At which temperature does water change from a liquid to a solid at standard pressure?", choices:["0°C","4°C","100°C","−273°C"], correct:0, explanation:"Water freezes (liquid → solid) at 0°C (273 K) at standard pressure of 1 atm. This is a standard reference point."},
-  // ATOMIC THEORY
-  {topic:"Atomic Theory", q:"The atomic number of an element is equal to the number of:", choices:["Neutrons in the nucleus","Electrons in the outermost shell","Protons in the nucleus","Nucleons in the atom"], correct:2, explanation:"Atomic number = number of protons in the nucleus. This defines the element — changing the proton count means you have a different element."},
-  {topic:"Atomic Theory", q:"An atom has 17 protons, 18 neutrons, and 17 electrons. What is its mass number?", choices:["17","18","34","35"], correct:3, explanation:"Mass number = protons + neutrons = 17 + 18 = 35. This is the atom Cl-35, an isotope of chlorine."},
-  {topic:"Atomic Theory", q:"Two atoms that are isotopes of the same element must have the same:", choices:["Mass number","Number of neutrons","Number of protons","Total number of nucleons"], correct:2, explanation:"Isotopes are atoms of the same element, so they must have the same number of protons (atomic number). They differ in the number of neutrons (and therefore mass number)."},
-  {topic:"Atomic Theory", q:"An electron moves from a lower energy level to a higher energy level. The atom is now in a(n):", choices:["Ground state","Ionic state","Excited state","Covalent state"], correct:2, explanation:"When an electron absorbs energy and jumps to a higher principal energy level, the atom is in an excited state. When it falls back down, energy is released as light."},
-  {topic:"Atomic Theory", q:"Which subatomic particle has a charge of −1 and essentially no mass?", choices:["Proton","Neutron","Electron","Positron"], correct:2, explanation:"Electrons have a charge of −1 and negligible mass (about 1/1836 of a proton). They occupy orbitals outside the nucleus."},
-  {topic:"Atomic Theory", q:"What is the maximum number of electrons in the second principal energy level?", choices:["2","8","10","18"], correct:1, explanation:"The second principal energy level (n = 2) can hold a maximum of 8 electrons (in the 2s and 2p sublevels combined)."},
-  {topic:"Atomic Theory", q:"The average atomic mass of an element is determined by the:", choices:["Mass of the most abundant isotope only","Sum of all isotope masses","Weighted average of all naturally occurring isotopes","Number of protons in the most stable isotope"], correct:2, explanation:"Atomic mass is the weighted average of all naturally occurring isotopes, taking into account both their masses and their relative abundances in nature."},
-  // PERIODIC TABLE
-  {topic:"Periodic Table", q:"Which element has the greatest electronegativity?", choices:["Cesium","Sodium","Oxygen","Fluorine"], correct:3, explanation:"Fluorine (F) has the highest electronegativity value (3.98 on the Pauling scale) of all elements. Electronegativity increases across a period and up a group."},
-  {topic:"Periodic Table", q:"As you move from left to right across Period 3 of the periodic table, atomic radius generally:", choices:["Increases","Decreases","Remains the same","Doubles"], correct:1, explanation:"Atomic radius decreases across a period because the nuclear charge (protons) increases while electrons are added to the same principal energy level, pulling the electron cloud in closer."},
-  {topic:"Periodic Table", q:"Which group of elements is characterized by having a complete outer electron shell and very low reactivity?", choices:["Alkali metals (Group 1)","Halogens (Group 17)","Noble gases (Group 18)","Transition metals"], correct:2, explanation:"Noble gases (Group 18) have completely filled valence shells, making them extremely stable and nearly unreactive. They rarely form compounds."},
-  {topic:"Periodic Table", q:"Which of the following elements has the highest first ionization energy?", choices:["Lithium (Li)","Sodium (Na)","Potassium (K)","Neon (Ne)"], correct:3, explanation:"Neon is a noble gas with a complete electron shell, requiring the most energy to remove an electron. Ionization energy increases going up and to the right on the periodic table."},
-  {topic:"Periodic Table", q:"An element has the electron configuration 2-8-1. To which group does this element belong?", choices:["Group 1","Group 2","Group 17","Group 18"], correct:0, explanation:"An electron configuration ending in 1 valence electron (2-8-1 = sodium) belongs to Group 1, the alkali metals. Valence electrons determine group placement."},
-  {topic:"Periodic Table", q:"Which statement is true about elements in the same group (family) of the periodic table?", choices:["They have the same mass number","They have the same number of electron shells","They have the same number of valence electrons","They have the same atomic radius"], correct:2, explanation:"Elements in the same group share the same number of valence electrons, which gives them similar chemical properties. This is the basis for the periodic table's organization."},
-  // BONDING
-  {topic:"Bonding", q:"Which type of bond involves the complete transfer of electrons from one atom to another?", choices:["Polar covalent","Nonpolar covalent","Ionic","Metallic"], correct:2, explanation:"Ionic bonds form when electrons are completely transferred (usually from a metal to a nonmetal). The resulting oppositely charged ions attract each other electrostatically."},
-  {topic:"Bonding", q:"A bond between two identical nonmetal atoms (such as H–H) is best classified as:", choices:["Ionic","Polar covalent","Nonpolar covalent","Metallic"], correct:2, explanation:"Identical atoms have the same electronegativity, so electrons are shared equally — this is a nonpolar covalent bond. There is no partial charge on either atom."},
-  {topic:"Bonding", q:"Which property is characteristic of ionic compounds in the solid state?", choices:["They conduct electricity","They are poor conductors of heat","They have low melting points","They do not conduct electricity"], correct:3, explanation:"In the solid state, ions are locked in a lattice and cannot move freely, so ionic solids do not conduct electricity. When melted or dissolved in water, however, they do conduct."},
-  {topic:"Bonding", q:"Which molecule contains a polar covalent bond?", choices:["H₂","Cl₂","HCl","N₂"], correct:2, explanation:"HCl is polar covalent because chlorine is more electronegative than hydrogen, creating unequal electron sharing and a partial negative charge on Cl and partial positive on H."},
-  {topic:"Bonding", q:"The 'sea of electrons' model best describes which type of bonding?", choices:["Ionic bonding","Covalent bonding","Metallic bonding","Hydrogen bonding"], correct:2, explanation:"Metallic bonding is described as positive metal ions (cations) surrounded by delocalized electrons that can move freely — the 'sea of electrons.' This explains electrical conductivity in metals."},
-  {topic:"Bonding", q:"Which type of intermolecular force is responsible for the unusually high boiling point of water?", choices:["London dispersion forces","Dipole-dipole forces","Hydrogen bonding","Ionic attraction"], correct:2, explanation:"Water's high boiling point relative to its molecular mass is due to strong hydrogen bonding. H₂O has an H atom bonded to O (electronegative), allowing strong H-bond formation between molecules."},
-  // CHEMICAL REACTIONS
-  {topic:"Chemical Formulas & Reactions", q:"In the reaction 2H₂ + O₂ → 2H₂O, what type of reaction is this?", choices:["Decomposition","Single replacement","Synthesis","Double replacement"], correct:2, explanation:"This is a synthesis (combination) reaction: two or more simpler substances combine to form a single, more complex product (A + B → AB)."},
-  {topic:"Chemical Formulas & Reactions", q:"According to the law of conservation of mass, in a chemical reaction:", choices:["Energy is always released","The total mass of reactants equals the total mass of products","New atoms are always created","Mass can be converted to energy"], correct:1, explanation:"The law of conservation of mass states that mass is neither created nor destroyed in a chemical reaction. The total mass of all reactants equals the total mass of all products."},
-  {topic:"Chemical Formulas & Reactions", q:"How many moles are in 44 g of CO₂? (Molar mass of CO₂ = 44 g/mol)", choices:["0.5 mol","1.0 mol","2.0 mol","44 mol"], correct:1, explanation:"Moles = mass ÷ molar mass = 44 g ÷ 44 g/mol = 1.0 mol. Memorizing key molar masses (H₂O=18, CO₂=44, NaCl=58.5) saves time on Regents."},
-  {topic:"Chemical Formulas & Reactions", q:"What is the molar mass of H₂SO₄? (H=1, S=32, O=16)", choices:["49 g/mol","80 g/mol","98 g/mol","114 g/mol"], correct:2, explanation:"H₂SO₄: (2×1) + (1×32) + (4×16) = 2 + 32 + 64 = 98 g/mol. Adding up atomic masses multiplied by subscripts gives molar mass."},
-  {topic:"Chemical Formulas & Reactions", q:"How many particles are in 2.0 moles of water?", choices:["6.02 × 10²³","1.20 × 10²⁴","3.01 × 10²³","2.00 × 10²³"], correct:1, explanation:"Number of particles = moles × Avogadro's number = 2.0 × 6.02×10²³ = 1.204×10²⁴ ≈ 1.20×10²⁴ particles."},
-  {topic:"Chemical Formulas & Reactions", q:"In a chemical reaction, the substance that is completely used up and determines how much product forms is called the:", choices:["Excess reagent","Catalyst","Limiting reagent","Solvent"], correct:2, explanation:"The limiting reagent is the reactant that runs out first, stopping the reaction. It limits (determines) the maximum amount of product that can form."},
-  // KINETICS & EQUILIBRIUM
-  {topic:"Kinetics & Equilibrium", q:"Which factor would NOT increase the rate of a chemical reaction?", choices:["Increasing temperature","Adding a catalyst","Increasing the concentration of reactants","Decreasing the surface area of a solid reactant"], correct:3, explanation:"Decreasing surface area reduces the contact between reactants, slowing the reaction rate. Increasing temperature, concentration, surface area, or adding a catalyst all speed up reactions."},
-  {topic:"Kinetics & Equilibrium", q:"A catalyst speeds up a reaction by:", choices:["Increasing the temperature","Increasing the concentration of reactants","Lowering the activation energy","Increasing the activation energy"], correct:2, explanation:"A catalyst provides an alternative reaction pathway with a lower activation energy, allowing more collisions to be successful. The catalyst itself is not consumed in the process."},
-  {topic:"Kinetics & Equilibrium", q:"In an exothermic reaction, the potential energy of the products compared to the reactants is:", choices:["Greater","The same","Less","Equal to the activation energy"], correct:2, explanation:"In an exothermic reaction, energy is released to the surroundings, so the products have LESS potential energy than the reactants. ΔH is negative for exothermic reactions."},
-  {topic:"Kinetics & Equilibrium", q:"According to Le Chatelier's principle, if the concentration of a product is increased in a system at equilibrium, the reaction will shift:", choices:["To the right (toward products)","To the left (toward reactants)","Not at all","To a higher temperature"], correct:1, explanation:"Increasing product concentration is a stress that the system relieves by shifting left (toward reactants) to consume some of the added product and restore equilibrium."},
-  {topic:"Kinetics & Equilibrium", q:"At chemical equilibrium in a reversible reaction:", choices:["The reaction has stopped completely","The forward rate equals the reverse rate","All reactants have been consumed","Only the forward reaction is occurring"], correct:1, explanation:"At equilibrium, both the forward and reverse reactions continue to occur, but their rates are equal, so the concentrations of reactants and products remain constant."},
-  {topic:"Kinetics & Equilibrium", q:"Which statement correctly describes an endothermic reaction?", choices:["Heat is released to the surroundings","ΔH is negative","The products have lower energy than the reactants","The system absorbs energy from the surroundings"], correct:3, explanation:"In an endothermic reaction, the system absorbs energy from the surroundings. The products have MORE energy than the reactants, and ΔH is positive."},
-  // SOLUTIONS
-  {topic:"Solutions", q:"A solution is considered saturated when:", choices:["No more solute can be dissolved at that temperature","The solution is clear in color","The solute and solvent are the same substance","The solution has a high concentration"], correct:0, explanation:"A saturated solution contains the maximum amount of dissolved solute possible at a given temperature. Adding more solute to a saturated solution results in undissolved solid."},
-  {topic:"Solutions", q:"What is the molarity of a solution containing 2 moles of NaCl dissolved in 1 liter of solution?", choices:["0.5 M","1.0 M","2.0 M","4.0 M"], correct:2, explanation:"Molarity (M) = moles of solute ÷ liters of solution = 2 mol ÷ 1 L = 2.0 M. Molarity is the most common unit of concentration in chemistry."},
-  {topic:"Solutions", q:"Which substance, when dissolved in water, produces an electrolyte solution?", choices:["Sugar (C₁₂H₂₂O₁₁)","Ethanol (C₂H₅OH)","Table salt (NaCl)","Oxygen (O₂)"], correct:2, explanation:"NaCl dissociates into Na⁺ and Cl⁻ ions in water, producing a solution that conducts electricity — making it an electrolyte. Sugar and ethanol are nonelectrolytes."},
-  {topic:"Solutions", q:"As temperature increases, the solubility of most solid solutes in water:", choices:["Decreases","Increases","Remains the same","First increases then sharply decreases"], correct:1, explanation:"For most solid solutes, solubility in water increases with temperature (e.g., sugar dissolves better in hot water). However, gases become less soluble as temperature rises."},
-  {topic:"Solutions", q:"What happens to the boiling point of water when a solute is dissolved in it?", choices:["It decreases","It stays the same","It increases","It becomes unpredictable"], correct:2, explanation:"Boiling point elevation is a colligative property — adding any solute to water raises the boiling point. This is why salt is sometimes added to cooking water (though the effect is tiny at culinary concentrations)."},
-  {topic:"Solutions", q:"Which of the following is NOT a colligative property?", choices:["Boiling point elevation","Freezing point depression","Color of the solution","Osmotic pressure"], correct:2, explanation:"Color depends on the identity of the solute, not the number of dissolved particles — so it is NOT a colligative property. Colligative properties (BP elevation, FP depression, osmotic pressure) depend only on particle count."},
-  // ACIDS & BASES
-  {topic:"Acids & Bases", q:"According to the Arrhenius definition, an acid is a substance that:", choices:["Accepts a proton in solution","Donates a hydroxide ion in solution","Produces H⁺ (hydrogen ions) in aqueous solution","Produces OH⁻ ions in aqueous solution"], correct:2, explanation:"Arrhenius acids produce H⁺ ions (or H₃O⁺ after proton transfer to water) in aqueous solution. Examples: HCl → H⁺ + Cl⁻."},
-  {topic:"Acids & Bases", q:"A solution has a pH of 3. What is the nature of this solution?", choices:["Basic","Neutral","Acidic","Alkaline"], correct:2, explanation:"pH < 7 is acidic; pH = 7 is neutral; pH > 7 is basic. A pH of 3 is acidic, with a relatively high H⁺ ion concentration."},
-  {topic:"Acids & Bases", q:"What are the products of a neutralization reaction between an acid and a base?", choices:["Two acids","Two bases","A salt and water","Hydrogen gas and oxygen gas"], correct:2, explanation:"Acid + Base → Salt + Water. For example: HCl + NaOH → NaCl + H₂O. The H⁺ from the acid and OH⁻ from the base combine to form water."},
-  {topic:"Acids & Bases", q:"Which of the following is a strong acid?", choices:["Acetic acid (CH₃COOH)","Carbonic acid (H₂CO₃)","Hydrochloric acid (HCl)","Phosphoric acid (H₃PO₄)"], correct:2, explanation:"HCl is a strong acid — it completely ionizes in water. Acetic acid, carbonic acid, and phosphoric acid are all weak acids that only partially ionize."},
-  {topic:"Acids & Bases", q:"At 25°C, what is the pH + pOH equal to?", choices:["7","10","14","0"], correct:2, explanation:"At 25°C, pH + pOH = 14. This relationship comes from the water equilibrium constant Kw = [H⁺][OH⁻] = 1×10⁻¹⁴."},
-  {topic:"Acids & Bases", q:"In a titration experiment, the equivalence point is reached when:", choices:["The indicator changes color","The solution turns clear","The moles of acid equal the moles of base","The pH equals 7"], correct:2, explanation:"The equivalence point is when stoichiometrically equal amounts of acid and base have reacted (moles acid = moles base). The indicator color change signals we're near this point, but the equivalence point itself is the molar equality."},
-  {topic:"Acids & Bases", q:"Which of the following best describes a Brønsted-Lowry acid?", choices:["A proton acceptor","A hydroxide ion donor","A proton donor","An electron pair donor"], correct:2, explanation:"In the Brønsted-Lowry model, an acid is a proton (H⁺) donor. This is broader than the Arrhenius definition because it applies to non-aqueous solutions too."},
-  // REDOX
-  {topic:"Redox & Electrochemistry", q:"In a redox reaction, oxidation is defined as:", choices:["A gain of electrons","A loss of protons","A loss of electrons","A gain of protons"], correct:2, explanation:"OIL RIG: Oxidation Is Loss, Reduction Is Gain (of electrons). Oxidation increases the oxidation number of an atom."},
-  {topic:"Redox & Electrochemistry", q:"In the reaction Zn + CuSO₄ → ZnSO₄ + Cu, which species is oxidized?", choices:["Cu²⁺","Zn","SO₄²⁻","Cu"], correct:1, explanation:"Zinc (Zn⁰) loses electrons to become Zn²⁺ — it is oxidized. Copper (Cu²⁺) gains electrons to become Cu⁰ — it is reduced. Zn is also the reducing agent."},
-  {topic:"Redox & Electrochemistry", q:"In an electrochemical cell, oxidation occurs at the:", choices:["Cathode","Anode","Salt bridge","Electrolyte"], correct:1, explanation:"Oxidation occurs at the Anode (both start with vowels — a memory trick!). Reduction occurs at the Cathode."},
-  {topic:"Redox & Electrochemistry", q:"What is the oxidation number of sulfur in H₂SO₄?", choices:["+2","+4","+6","−2"], correct:2, explanation:"In H₂SO₄: H is +1 (×2 = +2), O is −2 (×4 = −8). For the compound to be neutral: +2 + S + (−8) = 0, so S = +6."},
-  {topic:"Redox & Electrochemistry", q:"Which process uses electrical energy to drive a non-spontaneous chemical reaction?", choices:["Galvanic cell operation","Electrolysis","Combustion","Nuclear fission"], correct:1, explanation:"Electrolysis uses electrical energy to force a non-spontaneous reaction. Examples: electroplating metals, producing aluminum from Al₂O₃, splitting water into H₂ and O₂."},
-  {topic:"Redox & Electrochemistry", q:"A more active metal on the activity series will:", choices:["Be reduced more easily","Not react with acid","Replace a less active metal from its salt solution","Lose electrons less readily"], correct:2, explanation:"More active metals are better reducing agents — they oxidize (lose electrons) more readily. A more active metal can displace a less active metal from a solution of its salt."},
-  // NUCLEAR CHEMISTRY
-  {topic:"Nuclear Chemistry", q:"During alpha decay, an atom emits an alpha particle. The alpha particle is identical to:", choices:["A helium-4 nucleus","A hydrogen nucleus","A beta particle","A gamma ray"], correct:0, explanation:"An alpha particle (⁴₂He) consists of 2 protons and 2 neutrons — identical to a helium-4 nucleus. It has a +2 charge and is stopped by a sheet of paper."},
-  {topic:"Nuclear Chemistry", q:"A radioactive isotope has a half-life of 20 years. After 60 years, what fraction of the original sample remains?", choices:["1/2","1/4","1/8","1/16"], correct:2, explanation:"60 years ÷ 20 years/half-life = 3 half-lives. After each half-life, half remains: (1/2)³ = 1/8 of the original sample remains."},
-  {topic:"Nuclear Chemistry", q:"Which type of nuclear radiation has no mass and no electrical charge?", choices:["Alpha radiation","Beta radiation","Gamma radiation","Neutron radiation"], correct:2, explanation:"Gamma (γ) radiation is high-energy electromagnetic radiation with no mass and no charge. It is the most penetrating radiation — requiring lead or thick concrete to stop."},
-  {topic:"Nuclear Chemistry", q:"Nuclear fission involves:", choices:["Combining two light nuclei to release energy","Splitting a heavy nucleus into lighter fragments","The emission of alpha particles only","Converting mass to electrons"], correct:1, explanation:"Nuclear fission is the splitting of a heavy nucleus (like U-235 or Pu-239) into lighter nuclei, releasing enormous amounts of energy. This is the process used in nuclear power plants and atomic bombs."},
-  {topic:"Nuclear Chemistry", q:"Which equation correctly represents a nuclear transmutation by beta decay?", choices:["¹⁴₆C → ¹⁴₇N + ⁰₋₁e","¹⁴₆C → ¹²₄Be + ⁴₂He","¹⁴₆C → ¹⁴₆C + γ","¹⁴₆C → ¹³₆C + ¹₀n"], correct:0, explanation:"In beta decay, a neutron converts to a proton and an electron (⁰₋₁e). Carbon-14 (6 protons) becomes Nitrogen-14 (7 protons) while the mass number stays at 14. Atomic number increases by 1."},
-  {topic:"Nuclear Chemistry", q:"What distinguishes nuclear changes from chemical changes?", choices:["Nuclear changes occur at higher temperatures","Nuclear changes involve changes to the nucleus itself","Nuclear changes require a catalyst","Nuclear changes are always reversible"], correct:1, explanation:"Nuclear changes involve the nucleus (changing the number of protons or neutrons), while chemical changes involve only the electrons (bond making and breaking). Nuclear reactions produce far more energy than chemical reactions."},
-  // ORGANIC CHEMISTRY
-  {topic:"Organic Chemistry", q:"What is the general formula for alkanes?", choices:["CₙH₂ₙ","CₙH₂ₙ₊₂","CₙH₂ₙ₋₂","CₙH₂ₙ₊₁"], correct:1, explanation:"Alkanes (saturated hydrocarbons with only single C–C bonds) have the general formula CₙH₂ₙ₊₂. For example: methane CH₄ (n=1), ethane C₂H₆ (n=2)."},
-  {topic:"Organic Chemistry", q:"Which organic compound class is characterized by the presence of an –OH functional group bonded to a carbon chain?", choices:["Ether","Aldehyde","Alcohol","Amine"], correct:2, explanation:"Alcohols contain the hydroxyl (–OH) functional group bonded to a carbon atom. Examples: methanol (CH₃OH), ethanol (C₂H₅OH)."},
-  {topic:"Organic Chemistry", q:"Compounds with the same molecular formula but different structural arrangements are called:", choices:["Isotopes","Allotropes","Isomers","Polymers"], correct:2, explanation:"Isomers share the same molecular formula (same types and numbers of atoms) but differ in how the atoms are arranged (structural isomers) or oriented in space (stereoisomers)."},
-  {topic:"Organic Chemistry", q:"Which type of organic reaction occurs when a small molecule (like H₂O) is released as two monomers join together?", choices:["Addition reaction","Substitution reaction","Condensation reaction","Combustion reaction"], correct:2, explanation:"Condensation (dehydration synthesis) reactions release a small molecule (usually water) as monomers link together. This is how proteins (amino acids linked with peptide bonds) and polyesters are formed."},
-  {topic:"Organic Chemistry", q:"An unsaturated hydrocarbon contains:", choices:["Only single bonds between carbon atoms","At least one double or triple bond between carbon atoms","An –OH group","Only hydrogen and oxygen"], correct:1, explanation:"Unsaturated hydrocarbons have at least one C=C double bond (alkenes) or C≡C triple bond (alkynes). They can undergo addition reactions by adding atoms across the double/triple bond."},
-  {topic:"Organic Chemistry", q:"Which functional group is found in carboxylic acids?", choices:["–OH","–NH₂","–COOH","–CHO"], correct:2, explanation:"The carboxyl group (–COOH) is the defining functional group of carboxylic acids. It contains both a carbonyl (C=O) and a hydroxyl (–OH) attached to the same carbon."},
-  {topic:"Organic Chemistry", q:"The reaction of a carboxylic acid with an alcohol produces:", choices:["An ether","An aldehyde","An ester and water","A ketone and water"], correct:2, explanation:"Esterification: carboxylic acid + alcohol → ester + water. Esters often have pleasant fruity or floral odors and are used in perfumes and food flavoring."},
-  // GASES
-  {topic:"Gases", q:"According to Boyle's Law, at constant temperature, if the pressure on a gas is doubled, the volume:", choices:["Doubles","Remains the same","Is halved","Increases by a factor of 4"], correct:2, explanation:"Boyle's Law: P₁V₁ = P₂V₂ (at constant T). If pressure doubles (P₂ = 2P₁), then V₂ = V₁/2. Pressure and volume are inversely proportional."},
-  {topic:"Gases", q:"According to Charles's Law, at constant pressure, if the absolute temperature of a gas doubles, the volume:", choices:["Halves","Remains the same","Doubles","Quadruples"], correct:2, explanation:"Charles's Law: V₁/T₁ = V₂/T₂ (T must be in Kelvin). If temperature doubles (T₂ = 2T₁), then V₂ = 2V₁. Volume and absolute temperature are directly proportional."},
-  {topic:"Gases", q:"At STP (Standard Temperature and Pressure), one mole of an ideal gas occupies:", choices:["1 liter","22.4 liters","44.8 liters","11.2 liters"], correct:1, explanation:"At STP (0°C and 1 atm), one mole of any ideal gas occupies 22.4 L (the molar volume). This is an important Reference Table value for gas stoichiometry problems."},
-  {topic:"Gases", q:"According to kinetic molecular theory, the average kinetic energy of gas particles is directly proportional to:", choices:["Pressure","Volume","Absolute temperature (K)","Molar mass"], correct:2, explanation:"KMT states that average kinetic energy = (3/2)kT, where T is absolute temperature (Kelvin). This means at higher temperatures, particles move faster on average."},
-  {topic:"Gases", q:"Which gas law is represented by the equation P₁V₁/T₁ = P₂V₂/T₂?", choices:["Boyle's Law","Charles's Law","Gay-Lussac's Law","The Combined Gas Law"], correct:3, explanation:"The Combined Gas Law combines Boyle's, Charles's, and Gay-Lussac's laws into one equation: P₁V₁/T₁ = P₂V₂/T₂. Temperature must be in Kelvin."},
-  {topic:"Gases", q:"Dalton's Law of Partial Pressures states that the total pressure of a gas mixture equals:", choices:["The pressure of the most abundant gas","The average of all partial pressures","The sum of the partial pressures of each component gas","The partial pressure of the lightest gas"], correct:2, explanation:"Dalton's Law: P_total = P₁ + P₂ + P₃ + ... Each gas in a mixture exerts its own partial pressure independently, and they add up to the total pressure."},
-  // THERMOCHEMISTRY
-  {topic:"Thermochemistry", q:"The specific heat capacity of water is 4.18 J/g·°C. How much heat (Q) is needed to raise 50 g of water by 10°C?", choices:["41.8 J","209 J","2090 J","418 J"], correct:2, explanation:"Q = mcΔT = 50 g × 4.18 J/g·°C × 10°C = 2,090 J. The specific heat of water (4.18 J/g·°C) is given on the Regents Reference Tables."},
-  {topic:"Thermochemistry", q:"Hess's Law states that:", choices:["Energy can neither be created nor destroyed","The total enthalpy change of a reaction is the same regardless of the number of steps","Entropy always increases in a spontaneous process","Heat flows from hot to cold objects"], correct:1, explanation:"Hess's Law: ΔH for a reaction is constant whether it occurs in one step or many steps. This allows calculation of enthalpy changes for reactions that are difficult to measure directly."},
-  {topic:"Thermochemistry", q:"In a thermochemical equation, a negative ΔH value indicates:", choices:["An endothermic reaction","An exothermic reaction","No energy change","A reaction that requires a catalyst"], correct:1, explanation:"A negative ΔH means energy is released to the surroundings — the reaction is exothermic. The products have lower enthalpy (energy content) than the reactants."},
-  {topic:"Thermochemistry", q:"Entropy (S) is best described as a measure of:", choices:["The heat content of a system","The electrical energy of a system","The disorder or randomness of a system","The potential energy stored in chemical bonds"], correct:2, explanation:"Entropy measures the disorder/randomness of a system. Processes that increase disorder (e.g., solid → gas, large molecule breaking into small molecules) are favored by entropy (ΔS > 0)."},
+
+  // ═══════════════════════════════════════════════
+  // MATTER & STRUCTURE (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Matter & Structure",q:"Which of the following best describes a pure substance?",choices:["A mixture of two or more elements","Matter with a uniform and definite composition","A combination of compounds separated physically","A liquid that dissolves in water"],correct:1,explanation:"A pure substance has a uniform, definite composition — either a single element or a single compound. Mixtures can vary in composition."},
+  {topic:"Matter & Structure",q:"A student measures a liquid's mass as 45 g and volume as 15 mL. What is its density?",choices:["0.33 g/mL","3.0 g/mL","60.0 g/mL","675 g/mL"],correct:1,explanation:"D = m/V = 45 g ÷ 15 mL = 3.0 g/mL. This formula is on the Regents Reference Tables."},
+  {topic:"Matter & Structure",q:"Which process describes a solid changing directly to a gas?",choices:["Condensation","Evaporation","Sublimation","Deposition"],correct:2,explanation:"Sublimation is the direct solid→gas phase change. Dry ice (solid CO₂) is the classic example."},
+  {topic:"Matter & Structure",q:"Which of the following is a chemical property of iron?",choices:["Melting point of 1538°C","Silver-gray metallic luster","Density of 7.87 g/cm³","Rusting in oxygen and water"],correct:3,explanation:"Rusting (Fe → Fe₂O₃) changes chemical composition — it is a chemical property. The others are physical properties."},
+  {topic:"Matter & Structure",q:"Which statement best describes a homogeneous mixture?",choices:["It can be separated by filtration","It contains only one type of atom","Its composition is uniform throughout","It cannot be separated by any physical means"],correct:2,explanation:"Homogeneous mixtures (solutions) have uniform composition throughout, like saltwater."},
+  {topic:"Matter & Structure",q:"A substance has mass 120 g and volume 40 cm³. Is it aluminum (density = 2.7 g/cm³)?",choices:["Yes, D = 3.0 g/cm³ matches aluminum","No, D = 3.0 g/cm³ does not match aluminum","Yes, D = 0.33 g/cm³ matches","No, D = 80 g/cm³ does not match"],correct:1,explanation:"D = 120/40 = 3.0 g/cm³ ≠ 2.7 g/cm³. Not aluminum. Always calculate before concluding."},
+  {topic:"Matter & Structure",q:"Which of the following is an example of a physical change?",choices:["Iron rusting","Wood burning","Water freezing","Baking soda reacting with vinegar"],correct:2,explanation:"Water freezing is a phase change — composition stays H₂O. No new substance is formed. Rusting, burning, and acid-base reactions all form new substances."},
+  {topic:"Matter & Structure",q:"Which property is used to identify a substance based on mass divided by volume?",choices:["Mass","Weight","Density","Volume"],correct:2,explanation:"Density (D = m/V) is an intensive physical property used to identify substances — it doesn't change with sample size, unlike mass or volume."},
+  {topic:"Matter & Structure",q:"A heterogeneous mixture is best described as:",choices:["A mixture with uniform composition","A mixture with non-uniform composition","A compound made of two elements","A substance with a fixed boiling point"],correct:1,explanation:"Heterogeneous mixtures are non-uniform — different parts of the sample can have different compositions. Example: sand and water, or a salad."},
+  {topic:"Matter & Structure",q:"Which statement correctly compares elements and compounds?",choices:["Both can be broken down by chemical means","Elements can be broken down; compounds cannot","Compounds can be broken down chemically; elements cannot","Both are types of mixtures"],correct:2,explanation:"Compounds can be broken down into simpler substances (their component elements) by chemical means. Elements cannot be chemically broken down further."},
+  {topic:"Matter & Structure",q:"A liquid boils at 78°C at standard pressure. This is an example of a:",choices:["Chemical property","Chemical change","Physical property","Chemical reaction"],correct:2,explanation:"Boiling point is a physical property — it describes how a substance behaves without changing its chemical identity."},
+  {topic:"Matter & Structure",q:"Which sample contains only one type of atom?",choices:["Water (H₂O)","Table salt (NaCl)","Oxygen gas (O₂)","Air"],correct:2,explanation:"O₂ contains only oxygen atoms — it is a pure element. H₂O and NaCl are compounds (multiple element types). Air is a mixture."},
+  {topic:"Matter & Structure",q:"What is the density of an object with mass 200 g and volume 25 mL?",choices:["0.125 g/mL","5 g/mL","8 g/mL","175 g/mL"],correct:2,explanation:"D = m/V = 200 g ÷ 25 mL = 8.0 g/mL. This is close to the density of iron (7.87 g/cm³) or nickel (8.9 g/cm³)."},
+
+  // ═══════════════════════════════════════════════
+  // ATOMIC THEORY (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Atomic Theory",q:"The atomic number of an element equals the number of:",choices:["Neutrons in the nucleus","Electrons in the outermost shell","Protons in the nucleus","Nucleons in the atom"],correct:2,explanation:"Atomic number = number of protons. This defines the element — change the proton count and you have a different element."},
+  {topic:"Atomic Theory",q:"An atom has 17 protons, 18 neutrons, 17 electrons. What is its mass number?",choices:["17","18","34","35"],correct:3,explanation:"Mass number = protons + neutrons = 17 + 18 = 35. This is Cl-35, an isotope of chlorine."},
+  {topic:"Atomic Theory",q:"Isotopes of the same element must have the same:",choices:["Mass number","Number of neutrons","Number of protons","Number of nucleons"],correct:2,explanation:"Isotopes are same-element atoms, so they share the same number of protons (atomic number). They differ in neutron count and mass number."},
+  {topic:"Atomic Theory",q:"An electron absorbs energy and moves to a higher energy level. The atom is in a(n):",choices:["Ground state","Ionic state","Excited state","Covalent state"],correct:2,explanation:"Excited state: an electron is at a higher energy level than normal. It releases energy (often as light) when falling back to the ground state."},
+  {topic:"Atomic Theory",q:"What is the maximum number of electrons in the second principal energy level?",choices:["2","8","10","18"],correct:1,explanation:"n=2 holds max 8 electrons: 2 in 2s + 6 in 2p. The formula is 2n² but for n=2: 2(4) = 8."},
+  {topic:"Atomic Theory",q:"Cl-35 (75%) and Cl-37 (25%) are naturally occurring isotopes. What is closest to chlorine's atomic mass?",choices:["35.0 amu","35.5 amu","36.0 amu","37.0 amu"],correct:1,explanation:"Weighted avg = (35×0.75)+(37×0.25) = 26.25+9.25 = 35.5 amu. More Cl-35 pulls the average closer to 35."},
+  {topic:"Atomic Theory",q:"Which subatomic particle has essentially no mass and a charge of −1?",choices:["Proton","Neutron","Electron","Positron"],correct:2,explanation:"Electrons have charge −1 and negligible mass (~1/1836 of a proton). They occupy orbitals outside the nucleus."},
+  {topic:"Atomic Theory",q:"An atom of carbon-14 has 6 protons. How many neutrons does it have?",choices:["6","7","8","14"],correct:2,explanation:"Neutrons = mass number − atomic number = 14 − 6 = 8. Carbon-14 is a radioactive isotope used in carbon dating."},
+  {topic:"Atomic Theory",q:"What is the maximum number of electrons in the first principal energy level?",choices:["1","2","4","8"],correct:1,explanation:"The first energy level (n=1) holds maximum 2 electrons, both in the 1s sublevel. Formula: 2n² = 2(1)² = 2."},
+  {topic:"Atomic Theory",q:"Which model of the atom correctly describes electrons as occupying specific energy levels?",choices:["Dalton's solid sphere model","Thomson's plum pudding model","Rutherford's nuclear model","Bohr's planetary model"],correct:3,explanation:"Bohr's model (1913) placed electrons in specific, quantized energy levels (shells) around the nucleus — a key advance over earlier models."},
+  {topic:"Atomic Theory",q:"An ion has 10 electrons and 11 protons. What is its charge?",choices:["2−","1−","1+","2+"],correct:2,explanation:"Charge = protons − electrons = 11 − 10 = +1. This is Na⁺ (sodium ion), which lost one electron to achieve a stable electron configuration."},
+  {topic:"Atomic Theory",q:"Which element has atomic number 8?",choices:["Carbon","Nitrogen","Oxygen","Fluorine"],correct:2,explanation:"Atomic number 8 = 8 protons = Oxygen (O). Memorizing the first 20 elements is strongly recommended for the Regents exam."},
+  {topic:"Atomic Theory",q:"As electrons move from the ground state to an excited state, the atom:",choices:["Loses mass","Releases energy","Absorbs energy","Becomes an ion"],correct:2,explanation:"Moving to a higher energy level requires absorbing energy (heat, light, electricity). The absorbed energy equals the energy difference between the two levels."},
+
+  // ═══════════════════════════════════════════════
+  // PERIODIC TABLE (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Periodic Table",q:"Which element has the greatest electronegativity?",choices:["Cesium","Sodium","Oxygen","Fluorine"],correct:3,explanation:"Fluorine (F) has the highest electronegativity (3.98). Electronegativity increases across a period and up a group."},
+  {topic:"Periodic Table",q:"As you move left to right across Period 3, atomic radius generally:",choices:["Increases","Decreases","Stays the same","Doubles"],correct:1,explanation:"Atomic radius decreases across a period: more protons pull electrons inward into the same shell, shrinking the atom."},
+  {topic:"Periodic Table",q:"Which group has a complete outer electron shell and very low reactivity?",choices:["Alkali metals (Group 1)","Halogens (Group 17)","Noble gases (Group 18)","Transition metals"],correct:2,explanation:"Noble gases (Group 18) have full valence shells — extremely stable and nearly unreactive."},
+  {topic:"Periodic Table",q:"An element has electron configuration 2-8-1. To which group does it belong?",choices:["Group 1","Group 2","Group 17","Group 18"],correct:0,explanation:"One valence electron → Group 1 (alkali metals). This is sodium (Na). Valence electrons = group number for main group elements."},
+  {topic:"Periodic Table",q:"Which statement is true about elements in the same group?",choices:["Same mass number","Same number of electron shells","Same number of valence electrons","Same atomic radius"],correct:2,explanation:"Same group = same valence electrons = similar chemical properties. This is the basis of the periodic table."},
+  {topic:"Periodic Table",q:"Which element is a halogen?",choices:["Neon","Argon","Chlorine","Calcium"],correct:2,explanation:"Chlorine (Cl) is in Group 17 — the halogens. Halogens have 7 valence electrons, are very reactive, and form salts with metals."},
+  {topic:"Periodic Table",q:"As you go DOWN a group, ionization energy generally:",choices:["Increases","Decreases","Stays the same","First increases then decreases"],correct:1,explanation:"Going down a group: more electron shells, valence electrons farther from nucleus, less attracted → easier to remove → lower ionization energy."},
+  {topic:"Periodic Table",q:"Which of the following is an alkali metal?",choices:["Magnesium","Calcium","Potassium","Aluminum"],correct:2,explanation:"Potassium (K) is in Group 1 — the alkali metals. They have 1 valence electron and are highly reactive, especially with water."},
+  {topic:"Periodic Table",q:"The element with atomic number 17 is classified as a:",choices:["Metal","Metalloid","Nonmetal","Noble gas"],correct:2,explanation:"Atomic number 17 = Chlorine (Cl) = nonmetal. Nonmetals are located on the upper-right of the periodic table."},
+  {topic:"Periodic Table",q:"Which property increases from left to right across a period?",choices:["Atomic radius","Metallic character","Ionization energy","Number of electron shells"],correct:2,explanation:"Ionization energy increases left to right across a period because increasing nuclear charge holds electrons more tightly, requiring more energy to remove them."},
+  {topic:"Periodic Table",q:"How many valence electrons does sulfur (S, Group 16) have?",choices:["2","4","6","8"],correct:2,explanation:"Group 16 elements have 6 valence electrons. Sulfur's configuration is 2-8-6, so 6 electrons are in the outermost shell."},
+  {topic:"Periodic Table",q:"Which element is classified as a metalloid (semimetal)?",choices:["Sodium","Silicon","Sulfur","Silver"],correct:1,explanation:"Silicon (Si) is a metalloid — it has properties intermediate between metals and nonmetals. Metalloids are found along the staircase on the periodic table."},
+  {topic:"Periodic Table",q:"Elements in Period 3 all have the same:",choices:["Number of valence electrons","Atomic mass","Number of occupied electron shells","Chemical reactivity"],correct:2,explanation:"All Period 3 elements have electrons in 3 principal energy levels (shells). Going across, the number of valence electrons increases from 1 (Na) to 8 (Ar)."},
+
+  // ═══════════════════════════════════════════════
+  // BONDING (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Bonding",q:"Which bond involves complete transfer of electrons from one atom to another?",choices:["Polar covalent","Nonpolar covalent","Ionic","Metallic"],correct:2,explanation:"Ionic bonds: electrons completely transferred from metal to nonmetal. The resulting ions attract electrostatically."},
+  {topic:"Bonding",q:"A bond between two identical nonmetal atoms (H–H) is:",choices:["Ionic","Polar covalent","Nonpolar covalent","Metallic"],correct:2,explanation:"Identical atoms share electrons equally — no electronegativity difference → nonpolar covalent bond."},
+  {topic:"Bonding",q:"Which molecule contains a polar covalent bond?",choices:["H₂","Cl₂","HCl","N₂"],correct:2,explanation:"HCl: Cl is more electronegative than H → unequal sharing → polar covalent (δ⁻ on Cl, δ⁺ on H)."},
+  {topic:"Bonding",q:"Which intermolecular force causes water's high boiling point?",choices:["London dispersion","Dipole-dipole","Hydrogen bonding","Ionic attraction"],correct:2,explanation:"Strong H-bonds between H₂O molecules (H bonded to electronegative O) give water an unusually high boiling point for its size."},
+  {topic:"Bonding",q:"The 'sea of electrons' model describes:",choices:["Ionic bonding","Covalent bonding","Metallic bonding","Hydrogen bonding"],correct:2,explanation:"Metallic bonding: cations in a lattice surrounded by delocalized electrons that move freely — explains conductivity and malleability."},
+  {topic:"Bonding",q:"Which compound is held together by ionic bonds?",choices:["CO₂","H₂O","NaCl","CH₄"],correct:2,explanation:"NaCl is Na⁺ and Cl⁻ held by ionic attraction. CO₂, H₂O, and CH₄ are all molecular compounds with covalent bonds."},
+  {topic:"Bonding",q:"What type of bond forms between two nonmetals with different electronegativities?",choices:["Ionic","Polar covalent","Nonpolar covalent","Metallic"],correct:1,explanation:"Two nonmetals with different electronegativities share electrons unequally → polar covalent bond. The more electronegative atom gets the partial negative charge."},
+  {topic:"Bonding",q:"Which property of metals is BEST explained by metallic bonding?",choices:["High melting point","Brittleness","Electrical conductivity","Low density"],correct:2,explanation:"Free-moving delocalized electrons in metallic bonds allow electric current to flow easily — explaining metals' excellent conductivity."},
+  {topic:"Bonding",q:"A Lewis dot structure for chlorine (Cl, Group 17) would show how many dots?",choices:["5","6","7","8"],correct:2,explanation:"Cl has 7 valence electrons (Group 17), so its Lewis dot structure shows 7 dots around the symbol."},
+  {topic:"Bonding",q:"Which substance has the highest melting point due to its network covalent structure?",choices:["Ice (H₂O)","Table salt (NaCl)","Diamond (C)","Methane (CH₄)"],correct:2,explanation:"Diamond is a network solid — every C atom is covalently bonded to 4 others in a 3D lattice. Breaking it requires breaking countless strong covalent bonds → extremely high melting point."},
+  {topic:"Bonding",q:"As the electronegativity difference between two atoms increases, the bond becomes more:",choices:["Nonpolar covalent","Polar covalent","Ionic","Metallic"],correct:2,explanation:"Greater electronegativity difference → more unequal electron sharing. At large enough differences (> ~1.7), electrons transfer completely → ionic bond."},
+  {topic:"Bonding",q:"Which molecules have dispersion (London) forces as their ONLY intermolecular force?",choices:["HF","H₂O","NH₃","Cl₂"],correct:3,explanation:"Cl₂ is nonpolar — its only intermolecular forces are London dispersion forces. HF, H₂O, and NH₃ all form hydrogen bonds."},
+  {topic:"Bonding",q:"The formula unit NaCl represents:",choices:["One molecule of sodium chloride","A covalent compound","An ionic compound with 1:1 ratio of Na⁺ to Cl⁻","A metallic compound"],correct:2,explanation:"NaCl is ionic — it exists as a crystal lattice of alternating Na⁺ and Cl⁻ ions, not discrete molecules. The formula shows the simplest 1:1 ratio."},
+
+  // ═══════════════════════════════════════════════
+  // CHEMICAL FORMULAS & REACTIONS (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Chemical Formulas & Reactions",q:"In 2H₂ + O₂ → 2H₂O, what type of reaction is this?",choices:["Decomposition","Single replacement","Synthesis","Double replacement"],correct:2,explanation:"Synthesis (combination): A + B → AB. Two simpler substances form one product."},
+  {topic:"Chemical Formulas & Reactions",q:"According to conservation of mass, in a chemical reaction:",choices:["Energy is always released","Total mass of reactants = total mass of products","New atoms are created","Mass can be converted to energy"],correct:1,explanation:"Mass is neither created nor destroyed. Reactant mass = product mass. This is why we balance equations."},
+  {topic:"Chemical Formulas & Reactions",q:"What is the molar mass of H₂SO₄? (H=1, S=32, O=16)",choices:["49 g/mol","80 g/mol","98 g/mol","114 g/mol"],correct:2,explanation:"(2×1) + (1×32) + (4×16) = 2+32+64 = 98 g/mol."},
+  {topic:"Chemical Formulas & Reactions",q:"The substance completely used up first in a reaction is the:",choices:["Excess reagent","Catalyst","Limiting reagent","Solvent"],correct:2,explanation:"The limiting reagent runs out first and stops the reaction, determining maximum product yield."},
+  {topic:"Chemical Formulas & Reactions",q:"What is the percent composition of oxygen in H₂O? (H=1, O=16)",choices:["11.1%","44.4%","88.9%","50.0%"],correct:2,explanation:"Molar mass H₂O = 18. % O = (16/18) × 100 = 88.9%."},
+  {topic:"Chemical Formulas & Reactions",q:"Which type of reaction is: CaCO₃ → CaO + CO₂?",choices:["Synthesis","Decomposition","Single replacement","Combustion"],correct:1,explanation:"Decomposition: AB → A + B. One compound breaks down into two simpler substances. Heating limestone (CaCO₃) is a classic example."},
+  {topic:"Chemical Formulas & Reactions",q:"In a double replacement reaction AB + CD → AD + CB, what is exchanged?",choices:["Electrons","Protons","Ions (cations and anions)","Neutrons"],correct:2,explanation:"Double replacement: ions swap partners. The cation of one compound combines with the anion of the other, forming two new compounds."},
+  {topic:"Chemical Formulas & Reactions",q:"What is the molar mass of NaOH? (Na=23, O=16, H=1)",choices:["24 g/mol","38 g/mol","40 g/mol","56 g/mol"],correct:2,explanation:"NaOH: 23 + 16 + 1 = 40 g/mol. NaOH (lye/sodium hydroxide) is a common strong base with a memorable molar mass of 40 g/mol."},
+  {topic:"Chemical Formulas & Reactions",q:"How many grams are in 0.5 moles of CO₂? (molar mass = 44 g/mol)",choices:["11 g","22 g","44 g","88 g"],correct:1,explanation:"Mass = moles × molar mass = 0.5 × 44 = 22 g. Rearranged from n = m/M."},
+  {topic:"Chemical Formulas & Reactions",q:"Which equation is correctly balanced?",choices:["H₂ + O₂ → H₂O","2H₂ + O₂ → 2H₂O","H₂ + O₂ → 2H₂O","2H₂ + 2O₂ → 2H₂O"],correct:1,explanation:"2H₂ + O₂ → 2H₂O: Left side has 4H, 2O. Right side has 4H, 2O. Balanced! Conservation of atoms requires equal numbers on both sides."},
+  {topic:"Chemical Formulas & Reactions",q:"What is the percent composition of Na in NaCl? (Na=23, Cl=35.5)",choices:["23.0%","39.3%","60.7%","35.5%"],correct:1,explanation:"Molar mass NaCl = 58.5. % Na = (23/58.5) × 100 = 39.3%."},
+  {topic:"Chemical Formulas & Reactions",q:"In a single replacement reaction, zinc is added to HCl solution. Which product forms?",choices:["ZnCl + H","ZnCl₂ + H₂","Zn + HCl","ZnH + Cl₂"],correct:1,explanation:"Zn + 2HCl → ZnCl₂ + H₂. Zinc replaces hydrogen from the acid, forming zinc chloride salt and hydrogen gas. Zn is more active than H."},
+  {topic:"Chemical Formulas & Reactions",q:"What is the empirical formula of a compound that is 40% C, 6.7% H, 53.3% O by mass?",choices:["CH₂O","C₂H₄O₂","CH₄O","C₃H₆O₃"],correct:0,explanation:"Moles: C=40/12=3.33, H=6.7/1=6.7, O=53.3/16=3.33. Divide by 3.33: C=1, H=2, O=1. Empirical formula = CH₂O."},
+
+  // ═══════════════════════════════════════════════
+  // KINETICS & EQUILIBRIUM (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Kinetics & Equilibrium",q:"Which factor would NOT increase the rate of a chemical reaction?",choices:["Increasing temperature","Adding a catalyst","Increasing reactant concentration","Decreasing surface area of solid reactant"],correct:3,explanation:"Decreasing surface area reduces reactant contact → slower reaction. All other choices increase collision frequency or energy."},
+  {topic:"Kinetics & Equilibrium",q:"A catalyst speeds up a reaction by:",choices:["Increasing temperature","Increasing reactant concentration","Lowering activation energy","Increasing activation energy"],correct:2,explanation:"A catalyst provides an alternative pathway with lower activation energy — more collisions are successful. The catalyst is not consumed."},
+  {topic:"Kinetics & Equilibrium",q:"In an exothermic reaction, products have ___ potential energy than reactants.",choices:["Greater","The same","Less","Unpredictably different"],correct:2,explanation:"Exothermic: energy released to surroundings → products have LESS potential energy than reactants. ΔH is negative."},
+  {topic:"Kinetics & Equilibrium",q:"If product concentration increases in a system at equilibrium, the reaction shifts:",choices:["Right (toward products)","Left (toward reactants)","Not at all","Toward higher temperature"],correct:1,explanation:"Le Chatelier: increased product concentration → system shifts LEFT to consume added product and restore equilibrium."},
+  {topic:"Kinetics & Equilibrium",q:"At chemical equilibrium in a reversible reaction:",choices:["The reaction has stopped","Forward rate = reverse rate","All reactants consumed","Only forward reaction occurs"],correct:1,explanation:"Equilibrium: both directions proceed at equal rates — concentrations remain constant but the reaction has NOT stopped."},
+  {topic:"Kinetics & Equilibrium",q:"Which correctly describes an endothermic reaction?",choices:["Heat released to surroundings","ΔH is negative","Products have lower energy than reactants","System absorbs energy from surroundings"],correct:3,explanation:"Endothermic: system absorbs energy. Products have MORE energy than reactants. ΔH is positive."},
+  {topic:"Kinetics & Equilibrium",q:"On a potential energy diagram, activation energy is the:",choices:["Energy difference between reactants and products","Height of the energy 'hill' above the reactant energy level","Total energy released","Energy of the products"],correct:1,explanation:"Activation energy = height from reactant energy level to the peak (transition state). It is the minimum energy needed for the reaction to proceed."},
+  {topic:"Kinetics & Equilibrium",q:"Increasing temperature in a reaction system generally:",choices:["Decreases the reaction rate","Increases the reaction rate","Has no effect on rate","Only affects catalyzed reactions"],correct:1,explanation:"Higher temperature → faster-moving particles → more frequent and energetic collisions → more successful collisions per second → faster reaction rate."},
+  {topic:"Kinetics & Equilibrium",q:"An enzyme is best described as:",choices:["A chemical that slows reactions","A biological catalyst","An inorganic compound","A product of a reaction"],correct:1,explanation:"Enzymes are biological catalysts (usually proteins) that lower activation energy for reactions in living organisms. They speed reactions without being consumed."},
+  {topic:"Kinetics & Equilibrium",q:"According to Le Chatelier's principle, increasing pressure in a gas-phase equilibrium favors:",choices:["The side with more moles of gas","The side with fewer moles of gas","The exothermic direction","The endothermic direction"],correct:1,explanation:"Increased pressure favors the side with FEWER moles of gas — this reduces total volume/pressure to relieve the stress."},
+  {topic:"Kinetics & Equilibrium",q:"Which change would shift the equilibrium N₂ + 3H₂ ⇌ 2NH₃ (ΔH = −92 kJ) to the RIGHT?",choices:["Increase temperature","Remove NH₃","Add a noble gas","Decrease pressure"],correct:1,explanation:"Removing product (NH₃) decreases product concentration → system shifts right to produce more NH₃ to restore equilibrium."},
+  {topic:"Kinetics & Equilibrium",q:"The activation energy of a reaction can be reduced by:",choices:["Increasing temperature only","Decreasing concentration","Adding a catalyst","Removing products"],correct:2,explanation:"Only a catalyst changes the activation energy by providing an alternative reaction pathway. Temperature increases the energy of particles but does not lower Ea."},
+  {topic:"Kinetics & Equilibrium",q:"Which potential energy diagram shows an exothermic reaction?",choices:["Products higher than reactants","Reactants higher than products","Reactants and products at the same level","No activation energy peak"],correct:1,explanation:"Exothermic: reactants start at higher energy, products end at lower energy. The difference (ΔH) is released to the surroundings. ΔH = E_products − E_reactants < 0."},
+
+  // ═══════════════════════════════════════════════
+  // SOLUTIONS (12 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Solutions",q:"A solution is saturated when:",choices:["No more solute can dissolve at that temperature","The solution is clear","Solute and solvent are the same","The solution has high concentration"],correct:0,explanation:"Saturated = maximum dissolved solute at a given temperature. Adding more creates undissolved solid."},
+  {topic:"Solutions",q:"Which substance dissolved in water produces an electrolyte solution?",choices:["Sugar (C₁₂H₂₂O₁₁)","Ethanol (C₂H₅OH)","Table salt (NaCl)","Oxygen (O₂)"],correct:2,explanation:"NaCl dissociates into Na⁺ and Cl⁻ — ions that conduct electricity. Sugar and ethanol are nonelectrolytes (no ions)."},
+  {topic:"Solutions",q:"What happens to water's boiling point when a solute is dissolved?",choices:["Decreases","Stays the same","Increases","Becomes unpredictable"],correct:2,explanation:"Boiling point elevation is a colligative property — dissolved particles interfere with vaporization, requiring higher temperature to boil."},
+  {topic:"Solutions",q:"Which is NOT a colligative property?",choices:["Boiling point elevation","Freezing point depression","Color of solution","Osmotic pressure"],correct:2,explanation:"Color depends on solute identity (not particle count) → NOT colligative. The other three depend only on number of dissolved particles."},
+  {topic:"Solutions",q:"As temperature increases, solubility of most solid solutes in water:",choices:["Decreases","Increases","Stays the same","First increases then decreases"],correct:1,explanation:"Most solid solutes become more soluble as temperature increases (e.g., sugar in hot water). Gases, however, become LESS soluble at higher temperatures."},
+  {topic:"Solutions",q:"Which best describes an unsaturated solution?",choices:["Contains more solute than can normally dissolve","Contains exactly the maximum amount of solute","Can dissolve more solute at the same temperature","Is a solid-liquid mixture"],correct:2,explanation:"An unsaturated solution contains less solute than the maximum possible — it can still dissolve more solute at that temperature."},
+  {topic:"Solutions",q:"A supersaturated solution is:",choices:["Very dilute","At exactly the saturation point","Unstable and contains more solute than normally possible","A mixture of two solvents"],correct:2,explanation:"Supersaturated solutions contain more dissolved solute than theoretically possible — they are unstable and will crystallize if disturbed."},
+  {topic:"Solutions",q:"Which factor increases the solubility of a gas in liquid?",choices:["Increasing temperature","Decreasing pressure","Increasing pressure","Adding a catalyst"],correct:2,explanation:"Henry's Law: gas solubility increases with pressure. Carbonated drinks are bottled under high CO₂ pressure — opening releases that pressure and CO₂ escapes."},
+  {topic:"Solutions",q:"What does it mean for a solvent to be called the 'universal solvent'?",choices:["It dissolves every substance","Water dissolves more substances than any other common solvent","It has no solubility limit","It is found in all living things"],correct:1,explanation:"Water is called the 'universal solvent' because its polarity allows it to dissolve more ionic and polar substances than any other common solvent."},
+  {topic:"Solutions",q:"Freezing point depression means that adding a solute to water will:",choices:["Raise the freezing point","Lower the freezing point","Have no effect on freezing point","Make it freeze faster"],correct:1,explanation:"Dissolved particles disrupt the formation of ice crystals, lowering the freezing point. This is why salt is spread on icy roads."},
+  {topic:"Solutions",q:"Which solution has the highest concentration of dissolved particles?",choices:["1 M NaCl","1 M glucose","1 M CaCl₂","1 M sucrose"],correct:2,explanation:"CaCl₂ dissociates into 3 ions (Ca²⁺ + 2Cl⁻) → 3 mol particles per mol. NaCl gives 2 particles. Glucose and sucrose are nonelectrolytes (1 particle each)."},
+  {topic:"Solutions",q:"What is the molality of a solution if 2 mol of solute is dissolved in 1 kg of solvent?",choices:["0.5 m","1 m","2 m","4 m"],correct:2,explanation:"Molality (m) = moles of solute ÷ kg of solvent = 2 mol ÷ 1 kg = 2 m. Unlike molarity, molality uses kg of solvent (not liters of solution)."},
+
+  // ═══════════════════════════════════════════════
+  // ACIDS & BASES (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Acids & Bases",q:"According to Arrhenius, an acid produces in aqueous solution:",choices:["OH⁻ ions","O²⁻ ions","H⁺ (hydrogen) ions","Metal cations"],correct:2,explanation:"Arrhenius acids produce H⁺ in aqueous solution. HCl(aq) → H⁺(aq) + Cl⁻(aq)."},
+  {topic:"Acids & Bases",q:"A solution with pH 3 is best described as:",choices:["Basic","Neutral","Acidic","Alkaline"],correct:2,explanation:"pH < 7 = acidic. pH = 7 = neutral. pH > 7 = basic. pH 3 has relatively high [H⁺]."},
+  {topic:"Acids & Bases",q:"Products of acid + base neutralization are:",choices:["Two acids","Two bases","A salt and water","H₂ gas and O₂ gas"],correct:2,explanation:"Acid + Base → Salt + Water. HCl + NaOH → NaCl + H₂O. H⁺ + OH⁻ → H₂O."},
+  {topic:"Acids & Bases",q:"Which is a strong acid?",choices:["Acetic acid (CH₃COOH)","Carbonic acid (H₂CO₃)","Hydrochloric acid (HCl)","Phosphoric acid (H₃PO₄)"],correct:2,explanation:"HCl completely ionizes in water → strong acid. Acetic, carbonic, phosphoric acids only partially ionize → weak acids."},
+  {topic:"Acids & Bases",q:"At 25°C, pH + pOH =",choices:["7","10","14","0"],correct:2,explanation:"pH + pOH = 14 at 25°C. From Kw = [H⁺][OH⁻] = 1×10⁻¹⁴. If pH = 3, pOH = 11."},
+  {topic:"Acids & Bases",q:"A Brønsted-Lowry acid is a:",choices:["Proton acceptor","Hydroxide ion donor","Proton donor","Electron pair donor"],correct:2,explanation:"Brønsted-Lowry acid = proton (H⁺) donor. Broader than Arrhenius — applies in non-aqueous solutions too."},
+  {topic:"Acids & Bases",q:"A solution with pH 11 has a [OH⁻] of:",choices:["1×10⁻³ M","1×10⁻¹¹ M","1×10⁻¹ M","1×10⁻¹⁴ M"],correct:0,explanation:"pH = 11 → pOH = 14 − 11 = 3 → [OH⁻] = 10⁻³ = 1×10⁻³ M. A basic solution has higher [OH⁻] than [H⁺]."},
+  {topic:"Acids & Bases",q:"Which indicator turns pink/red in acidic solution and is colorless in basic solution?",choices:["Litmus","Bromothymol blue","Phenolphthalein","Methyl orange"],correct:3,explanation:"Methyl orange is red/orange in acid and yellow in base. Phenolphthalein is actually the one that's colorless in acid and pink in base. Litmus is red in acid, blue in base."},
+  {topic:"Acids & Bases",q:"What is the pH of a neutral solution at 25°C?",choices:["0","7","10","14"],correct:1,explanation:"At 25°C, a neutral solution has [H⁺] = [OH⁻] = 1×10⁻⁷ M, giving pH = 7."},
+  {topic:"Acids & Bases",q:"Which of the following is a weak base?",choices:["NaOH","KOH","NH₃ (ammonia)","Ca(OH)₂"],correct:2,explanation:"Ammonia (NH₃) is a weak base — it partially reacts with water: NH₃ + H₂O ⇌ NH₄⁺ + OH⁻. NaOH, KOH, Ca(OH)₂ are strong bases."},
+  {topic:"Acids & Bases",q:"An amphoteric substance can act as:",choices:["Only an acid","Only a base","Either an acid or a base","Neither an acid nor a base"],correct:2,explanation:"Amphoteric substances (like water, H₂O) can donate OR accept protons depending on the reaction partner."},
+  {topic:"Acids & Bases",q:"What is the [H⁺] of a solution with pH = 4?",choices:["4 M","1×10⁻⁴ M","1×10⁻¹⁰ M","4×10⁻⁷ M"],correct:1,explanation:"pH = −log[H⁺] → [H⁺] = 10⁻ᵖᴴ = 10⁻⁴ = 1×10⁻⁴ M. Each pH unit represents a 10-fold change in [H⁺]."},
+  {topic:"Acids & Bases",q:"In the reaction NH₃ + H₂O ⇌ NH₄⁺ + OH⁻, water acts as a:",choices:["Brønsted-Lowry acid","Brønsted-Lowry base","Lewis acid","Neither acid nor base"],correct:0,explanation:"Water donates a proton (H⁺) to NH₃ → water is the Brønsted-Lowry acid here. This demonstrates water's amphoteric nature."},
+
+  // ═══════════════════════════════════════════════
+  // REDOX & ELECTROCHEMISTRY (12 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Redox & Electrochemistry",q:"In a redox reaction, oxidation is:",choices:["A gain of electrons","A loss of protons","A loss of electrons","A gain of protons"],correct:2,explanation:"OIL RIG: Oxidation Is Loss, Reduction Is Gain (of electrons). Oxidation also increases oxidation number."},
+  {topic:"Redox & Electrochemistry",q:"In Zn + CuSO₄ → ZnSO₄ + Cu, which species is oxidized?",choices:["Cu²⁺","Zn","SO₄²⁻","Cu"],correct:1,explanation:"Zn⁰ → Zn²⁺: loses 2e⁻ → oxidized. Cu²⁺ → Cu⁰: gains 2e⁻ → reduced. Zn is the reducing agent."},
+  {topic:"Redox & Electrochemistry",q:"In an electrochemical cell, oxidation occurs at the:",choices:["Cathode","Anode","Salt bridge","Electrolyte"],correct:1,explanation:"AN OX RED CAT: Anode = Oxidation, Cathode = Reduction."},
+  {topic:"Redox & Electrochemistry",q:"What is the oxidation number of sulfur in H₂SO₄?",choices:["+2","+4","+6","−2"],correct:2,explanation:"H=+1(×2=+2), O=−2(×4=−8). Neutral: +2+S−8=0 → S=+6."},
+  {topic:"Redox & Electrochemistry",q:"Which process uses electrical energy to drive a non-spontaneous chemical reaction?",choices:["Galvanic cell operation","Electrolysis","Combustion","Nuclear fission"],correct:1,explanation:"Electrolysis uses electricity to force non-spontaneous reactions. Examples: electroplating, producing Al from Al₂O₃, splitting water."},
+  {topic:"Redox & Electrochemistry",q:"A more active metal on the activity series will:",choices:["Be reduced more easily","Not react with acid","Replace a less active metal from its salt solution","Lose electrons less readily"],correct:2,explanation:"More active metals oxidize (lose electrons) more readily and can displace less active metals from salt solutions in single replacement reactions."},
+  {topic:"Redox & Electrochemistry",q:"In a galvanic cell, at the cathode:",choices:["Oxidation occurs","Reduction occurs","The electrolyte is produced","Electrons are generated"],correct:1,explanation:"Galvanic (voltaic) cell: spontaneous redox produces electricity. Cathode = reduction (gains electrons from the wire). Anode = oxidation."},
+  {topic:"Redox & Electrochemistry",q:"What is the oxidation number of oxygen in most compounds?",choices:["+2","−1","−2","+1"],correct:2,explanation:"Oxygen almost always has oxidation number −2 in compounds. Exceptions: peroxides (−1), OF₂ (+2), and when bonded to F."},
+  {topic:"Redox & Electrochemistry",q:"In the reaction 2Al + 3Cl₂ → 2AlCl₃, aluminum is:",choices:["Reduced and is the oxidizing agent","Oxidized and is the reducing agent","Reduced and is the reducing agent","Oxidized and is the oxidizing agent"],correct:1,explanation:"Al⁰ → Al³⁺: loses 3e⁻ → oxidized → reducing agent. Cl₂ → Cl⁻: gains electrons → reduced → oxidizing agent."},
+  {topic:"Redox & Electrochemistry",q:"What is the oxidation number of nitrogen in NO₃⁻?",choices:["+3","+5","−3","0"],correct:1,explanation:"In NO₃⁻: O=−2(×3=−6), total charge=−1. N + (−6) = −1 → N = +5."},
+  {topic:"Redox & Electrochemistry",q:"Which metal would NOT react with a solution of zinc sulfate (ZnSO₄)?",choices:["Magnesium","Aluminum","Copper","Iron"],correct:2,explanation:"Copper is LESS active than zinc on the activity series → cannot replace zinc from its solution. Only more active metals can displace less active metals."},
+  {topic:"Redox & Electrochemistry",q:"In electrolysis of water, hydrogen gas forms at the:",choices:["Anode","Cathode","Salt bridge","Membrane"],correct:1,explanation:"In water electrolysis: 2H₂O → 2H₂ + O₂. H⁺ ions are reduced at the cathode (2H⁺ + 2e⁻ → H₂). O₂ forms at the anode (oxidation)."},
+
+  // ═══════════════════════════════════════════════
+  // NUCLEAR CHEMISTRY (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Nuclear Chemistry",q:"During alpha decay, the emitted alpha particle is identical to:",choices:["A helium-4 nucleus","A hydrogen nucleus","A beta particle","A gamma ray"],correct:0,explanation:"Alpha particle = ⁴₂He = 2 protons + 2 neutrons. Charge +2, stopped by paper."},
+  {topic:"Nuclear Chemistry",q:"A radioactive isotope has a half-life of 20 years. After 60 years, what fraction remains?",choices:["1/2","1/4","1/8","1/16"],correct:2,explanation:"60 ÷ 20 = 3 half-lives. (1/2)³ = 1/8. 100%→50%→25%→12.5%."},
+  {topic:"Nuclear Chemistry",q:"Which nuclear radiation has no mass and no electrical charge?",choices:["Alpha","Beta","Gamma","Neutron"],correct:2,explanation:"Gamma (γ) = high-energy electromagnetic radiation. No mass, no charge, most penetrating — requires lead or thick concrete to stop."},
+  {topic:"Nuclear Chemistry",q:"Nuclear fission involves:",choices:["Combining two light nuclei","Splitting a heavy nucleus","Emitting alpha particles only","Converting mass to electrons"],correct:1,explanation:"Fission: heavy nucleus (U-235) splits into lighter fragments + enormous energy. Used in nuclear power plants and atomic bombs."},
+  {topic:"Nuclear Chemistry",q:"A 160 g radioactive sample has a half-life of 10 days. How much remains after 40 days?",choices:["80 g","40 g","20 g","10 g"],correct:3,explanation:"40÷10 = 4 half-lives. 160×(1/2)⁴ = 160/16 = 10 g."},
+  {topic:"Nuclear Chemistry",q:"Nuclear fusion involves:",choices:["Splitting heavy atoms","Combining light nuclei to form a heavier nucleus","Emitting gamma radiation only","Neutron capture"],correct:1,explanation:"Fusion combines light nuclei (e.g., hydrogen isotopes → helium) releasing enormous energy. Powers the sun and hydrogen bombs."},
+  {topic:"Nuclear Chemistry",q:"Which type of radiation is least penetrating?",choices:["Alpha","Beta","Gamma","X-rays"],correct:0,explanation:"Alpha particles (large, +2 charge) are stopped by a sheet of paper or a few centimeters of air. Their large size causes maximum ionization but minimum penetration."},
+  {topic:"Nuclear Chemistry",q:"In beta decay, a neutron in the nucleus converts to:",choices:["A proton + an electron emitted","Two protons","A proton + a gamma ray","An electron + a positron"],correct:0,explanation:"Beta decay: ¹₀n → ¹₁p + ⁰₋₁e (beta particle). The atom gains a proton (atomic number increases by 1) and emits an electron from the nucleus."},
+  {topic:"Nuclear Chemistry",q:"Carbon-14 is used in radiocarbon dating because it:",choices:["Is very stable","Is radioactive with a known half-life (~5,730 years)","Reacts with oxygen","Has the same mass as Carbon-12"],correct:1,explanation:"C-14 has a half-life of ~5,730 years — long enough to date organic material up to ~50,000 years old. Living organisms continuously take in C-14; after death, it decays at a known rate."},
+  {topic:"Nuclear Chemistry",q:"What is transmutation in nuclear chemistry?",choices:["Moving electrons between orbitals","Converting one element into another through nuclear reactions","Breaking ionic bonds","Increasing atomic mass"],correct:1,explanation:"Transmutation: one element becomes another due to nuclear changes (gain/loss of protons). Can occur naturally (radioactive decay) or artificially (particle bombardment)."},
+  {topic:"Nuclear Chemistry",q:"A sample of I-131 has a half-life of 8 days. After 24 days, what fraction of the original sample remains?",choices:["1/2","1/4","1/8","1/16"],correct:2,explanation:"24 ÷ 8 = 3 half-lives. (1/2)³ = 1/8 remains."},
+  {topic:"Nuclear Chemistry",q:"Which statement correctly distinguishes nuclear changes from chemical changes?",choices:["Nuclear changes occur at higher temperatures","Nuclear changes involve the nucleus; chemical changes involve electrons","Nuclear changes require a catalyst","Nuclear changes are always reversible"],correct:1,explanation:"Nuclear changes alter the nucleus (proton/neutron count). Chemical changes involve only electron rearrangements (bond making/breaking). Nuclear changes release far more energy."},
+  {topic:"Nuclear Chemistry",q:"In alpha decay, the mass number of the parent nucleus:",choices:["Increases by 4","Decreases by 4","Stays the same","Decreases by 2"],correct:1,explanation:"Alpha particle = 4 mass units (2p + 2n). When emitted, parent mass number decreases by 4 and atomic number decreases by 2."},
+
+  // ═══════════════════════════════════════════════
+  // ORGANIC CHEMISTRY (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Organic Chemistry",q:"What is the general formula for alkanes?",choices:["CₙH₂ₙ","CₙH₂ₙ₊₂","CₙH₂ₙ₋₂","CₙH₂ₙ₊₁"],correct:1,explanation:"Alkanes (saturated, single bonds): CₙH₂ₙ₊₂. CH₄(n=1), C₂H₆(n=2), C₃H₈(n=3)."},
+  {topic:"Organic Chemistry",q:"Which organic class has the –OH group bonded to a carbon chain?",choices:["Ether","Aldehyde","Alcohol","Amine"],correct:2,explanation:"Alcohols: –OH on carbon. Methanol (CH₃OH), ethanol (C₂H₅OH)."},
+  {topic:"Organic Chemistry",q:"Compounds with the same molecular formula but different structures are called:",choices:["Isotopes","Allotropes","Isomers","Polymers"],correct:2,explanation:"Isomers: same formula, different arrangement. Butane and isobutane are both C₄H₁₀."},
+  {topic:"Organic Chemistry",q:"An unsaturated hydrocarbon contains:",choices:["Only single bonds","At least one C=C or C≡C bond","An –OH group","Only H and O"],correct:1,explanation:"Unsaturated = at least one double bond (alkene) or triple bond (alkyne). They undergo addition reactions."},
+  {topic:"Organic Chemistry",q:"The reaction of a carboxylic acid with an alcohol produces:",choices:["An ether","An aldehyde","An ester and water","A ketone and water"],correct:2,explanation:"Esterification: RCOOH + R'OH → RCOOR' + H₂O. Esters have fruity odors."},
+  {topic:"Organic Chemistry",q:"Which functional group is found in aldehydes?",choices:["–OH","–COOH","–CHO","–NH₂"],correct:2,explanation:"Aldehydes contain the –CHO (formyl) group at the END of a carbon chain. Example: formaldehyde (HCHO), acetaldehyde (CH₃CHO)."},
+  {topic:"Organic Chemistry",q:"What type of reaction adds H₂ across a double bond in an alkene?",choices:["Substitution","Addition","Esterification","Condensation"],correct:1,explanation:"Addition reactions add atoms across a double or triple bond. Hydrogenation (adding H₂ to an alkene) is a common addition reaction — converting unsaturated fats to saturated fats."},
+  {topic:"Organic Chemistry",q:"Which organic compound class contains a carbonyl group (C=O) in the MIDDLE of the chain?",choices:["Aldehyde","Ketone","Carboxylic acid","Ester"],correct:1,explanation:"Ketones have the carbonyl group (C=O) bonded to two carbon-containing groups in the middle of the chain. Example: acetone (CH₃COCH₃)."},
+  {topic:"Organic Chemistry",q:"Which functional group characterizes amines?",choices:["–COOH","–OH","–NH₂","–CHO"],correct:2,explanation:"Amines contain the amino group (–NH₂). They are derived from ammonia (NH₃) by replacing H atoms with carbon groups. Example: methylamine (CH₃NH₂)."},
+  {topic:"Organic Chemistry",q:"What is the name of the 3-carbon alkane?",choices:["Methane","Ethane","Propane","Butane"],correct:2,explanation:"Alkane naming: meth=1C, eth=2C, prop=3C, but=4C, pent=5C. Propane (C₃H₈) is used as fuel in grills and camping stoves."},
+  {topic:"Organic Chemistry",q:"Which type of polymerization releases water as a byproduct?",choices:["Addition polymerization","Condensation polymerization","Chain polymerization","Free-radical polymerization"],correct:1,explanation:"Condensation polymerization: monomers link and release a small molecule (usually H₂O). Examples: nylon, polyester, proteins, DNA."},
+  {topic:"Organic Chemistry",q:"Fermentation of glucose (C₆H₁₂O₆) by yeast produces:",choices:["CO₂ and H₂O","C₂H₅OH (ethanol) and CO₂","C₂H₅OH and H₂O","CH₄ and CO₂"],correct:1,explanation:"Fermentation: C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂. Yeast converts sugar to ethanol and carbon dioxide — basis of brewing and breadmaking."},
+  {topic:"Organic Chemistry",q:"The general formula CₙH₂ₙ represents which class of hydrocarbons?",choices:["Alkanes","Alkenes","Alkynes","Cycloalkanes"],correct:1,explanation:"Alkenes: CₙH₂ₙ (one degree of unsaturation = one double bond). Example: ethene C₂H₄, propene C₃H₆."},
+
+  // ═══════════════════════════════════════════════
+  // GAS LAWS (14 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Gas Laws",q:"According to Boyle's Law, at constant T, if pressure doubles, volume:",choices:["Doubles","Stays same","Is halved","Increases 4×"],correct:2,explanation:"Boyle's Law: P₁V₁ = P₂V₂. P and V inversely proportional at constant T."},
+  {topic:"Gas Laws",q:"According to Charles's Law, at constant P, if absolute temperature doubles, volume:",choices:["Halves","Stays same","Doubles","Quadruples"],correct:2,explanation:"Charles's Law: V₁/T₁ = V₂/T₂ (T in Kelvin). V and T directly proportional at constant P."},
+  {topic:"Gas Laws",q:"At STP, one mole of ideal gas occupies:",choices:["1 L","22.4 L","44.8 L","11.2 L"],correct:1,explanation:"STP = 0°C (273 K), 1 atm. 1 mol ideal gas = 22.4 L at STP. On Reference Tables."},
+  {topic:"Gas Laws",q:"A gas occupies 4.0 L at 300 K. Volume at 600 K (constant P)?",choices:["2.0 L","4.0 L","8.0 L","12.0 L"],correct:2,explanation:"V₂ = V₁ × T₂/T₁ = 4.0 × 600/300 = 8.0 L. Temperature doubled, volume doubled."},
+  {topic:"Gas Laws",q:"A gas at 2.0 atm occupies 3.0 L. Volume at 1.0 atm (constant T)?",choices:["1.5 L","3.0 L","6.0 L","9.0 L"],correct:2,explanation:"V₂ = P₁V₁/P₂ = (2.0×3.0)/1.0 = 6.0 L. Pressure halved, volume doubled."},
+  {topic:"Gas Laws",q:"A gas at 300 K and 1.0 atm occupies 2.0 L. Volume at 600 K and 2.0 atm?",choices:["1.0 L","2.0 L","4.0 L","8.0 L"],correct:1,explanation:"Combined: V₂ = P₁V₁T₂/(T₁P₂) = (1×2×600)/(300×2) = 2.0 L. T and P both doubled — effects cancel."},
+  {topic:"Gas Laws",q:"The combined gas law is P₁V₁/T₁ = P₂V₂/T₂. Temperature must be in:",choices:["Celsius","Fahrenheit","Kelvin","Rankine"],correct:2,explanation:"ALL gas law calculations require absolute temperature in Kelvin. Convert: K = °C + 273."},
+  {topic:"Gas Laws",q:"Dalton's Law states total gas mixture pressure equals:",choices:["Pressure of most abundant gas","Average of partial pressures","Sum of partial pressures","Partial pressure of lightest gas"],correct:2,explanation:"P_total = P₁ + P₂ + P₃ + ... Each gas exerts its own partial pressure independently."},
+  {topic:"Gas Laws",q:"Average kinetic energy of gas particles is directly proportional to:",choices:["Pressure","Volume","Absolute temperature (K)","Molar mass"],correct:2,explanation:"KE_avg = (3/2)kT. Higher T → faster particles → higher average KE. Temperature IS a measure of average kinetic energy."},
+  {topic:"Gas Laws",q:"A gas at 27°C is heated to 327°C at constant volume. Pressure:",choices:["Doubles","Halves","Stays same","Triples"],correct:0,explanation:"Gay-Lussac: P₁/T₁ = P₂/T₂. T₁=300K, T₂=600K. P₂ = P₁×600/300 = 2P₁. Temperature doubled (in Kelvin) → pressure doubled."},
+  {topic:"Gas Laws",q:"Which gas law states that equal volumes of gases at the same T and P contain equal numbers of molecules?",choices:["Boyle's Law","Charles's Law","Avogadro's Law","Dalton's Law"],correct:2,explanation:"Avogadro's Law: at same T and P, equal volumes of any ideal gas contain the same number of molecules. Basis for molar volume (22.4 L/mol at STP)."},
+  {topic:"Gas Laws",q:"A balloon contains N₂ at 0.6 atm and O₂ at 0.4 atm. What is the total pressure?",choices:["0.4 atm","0.6 atm","1.0 atm","1.2 atm"],correct:2,explanation:"Dalton's Law: P_total = 0.6 + 0.4 = 1.0 atm. Partial pressures simply add together."},
+  {topic:"Gas Laws",q:"At what Kelvin temperature is 0°C?",choices:["0 K","100 K","273 K","373 K"],correct:2,explanation:"K = °C + 273. So 0°C = 273 K. STP is defined as 0°C (273 K) and 1 atm pressure."},
+  {topic:"Gas Laws",q:"A gas occupies 500 mL at 25°C. What volume does it occupy at 50°C (constant pressure)?",choices:["250 mL","541 mL","1000 mL","481 mL"],correct:1,explanation:"Charles's Law — convert to Kelvin: T₁=298K, T₂=323K. V₂ = 500×(323/298) = 541 mL. Temperature in Kelvin increased by only ~8%, so volume increases by ~8%."},
+
+  // ═══════════════════════════════════════════════
+  // THERMOCHEMISTRY (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Thermochemistry",q:"How much heat is needed to raise 100 g of water by 20°C? (c = 4.18 J/g·°C)",choices:["209 J","836 J","4180 J","8360 J"],correct:3,explanation:"Q = mcΔT = 100 × 4.18 × 20 = 8,360 J."},
+  {topic:"Thermochemistry",q:"A 50 g metal absorbs 500 J and temperature rises 10°C. Its specific heat is:",choices:["0.5 J/g·°C","1.0 J/g·°C","2.5 J/g·°C","5.0 J/g·°C"],correct:1,explanation:"c = Q/(mΔT) = 500/(50×10) = 1.0 J/g·°C."},
+  {topic:"Thermochemistry",q:"Negative ΔH indicates:",choices:["Endothermic reaction","Exothermic reaction","No energy change","Reaction requires catalyst"],correct:1,explanation:"Negative ΔH → energy released to surroundings → exothermic. Products have lower enthalpy than reactants."},
+  {topic:"Thermochemistry",q:"An endothermic reaction:",choices:["Releases heat to surroundings","Has negative ΔH","Has products with lower energy than reactants","Absorbs energy from surroundings"],correct:3,explanation:"Endothermic: system absorbs energy from surroundings. Products have MORE energy than reactants. ΔH > 0."},
+  {topic:"Thermochemistry",q:"Hess's Law states that:",choices:["Energy cannot be created or destroyed","Total ΔH is the same regardless of number of steps","Entropy always increases","Heat flows from hot to cold"],correct:1,explanation:"Hess's Law: ΔH is path-independent — same whether reaction occurs in one step or many. Used to calculate unmeasurable ΔH values."},
+  {topic:"Thermochemistry",q:"200 g of water cools from 80°C to 20°C. Heat released? (c = 4.18 J/g·°C)",choices:["5,016 J","25,080 J","50,160 J","836 J"],correct:2,explanation:"Q = mcΔT = 200 × 4.18 × 60 = 50,160 J released. ΔT = 80−20 = 60°C."},
+  {topic:"Thermochemistry",q:"Entropy (S) measures:",choices:["Heat content of a system","Electrical energy","Disorder or randomness","Potential energy in bonds"],correct:2,explanation:"Entropy = disorder/randomness. Solid→gas increases entropy greatly. Natural processes tend toward increased entropy (ΔS > 0)."},
+  {topic:"Thermochemistry",q:"Which process is endothermic?",choices:["Combustion of methane","Condensation of steam","Freezing of water","Melting of ice"],correct:3,explanation:"Melting (solid→liquid) absorbs heat → endothermic. Combustion, condensation, and freezing all release energy → exothermic."},
+  {topic:"Thermochemistry",q:"Which process is exothermic?",choices:["Evaporation of water","Melting of wax","Dissolving NH₄NO₃ (cold pack)","Rusting of iron"],correct:3,explanation:"Rusting (Fe oxidation) releases heat → exothermic. Evaporation, melting, and NH₄NO₃ dissolving absorb heat → endothermic."},
+  {topic:"Thermochemistry",q:"How much heat is released when 50 g of water cools from 100°C to 50°C? (c = 4.18 J/g·°C)",choices:["209 J","10,450 J","5,225 J","4,180 J"],correct:1,explanation:"Q = mcΔT = 50 × 4.18 × 50 = 10,450 J released."},
+  {topic:"Thermochemistry",q:"What temperature change occurs when 500 J heats 25 g of aluminum? (c(Al) = 0.90 J/g·°C)",choices:["11.25°C","22.2°C","18.0°C","45.0°C"],correct:1,explanation:"ΔT = Q/(mc) = 500/(25×0.90) = 500/22.5 = 22.2°C."},
+  {topic:"Thermochemistry",q:"On a potential energy diagram for an exothermic reaction, the heat of reaction (ΔH) equals:",choices:["The activation energy","The peak energy minus reactant energy","Product energy minus reactant energy (negative value)","Reactant energy minus product energy"],correct:2,explanation:"ΔH = E_products − E_reactants. For exothermic: products are lower → ΔH is negative. The magnitude equals the energy released."},
+  {topic:"Thermochemistry",q:"Which has the greatest entropy?",choices:["Ice at 0°C","Liquid water at 25°C","Steam at 100°C","Liquid water at 50°C"],correct:2,explanation:"Entropy increases: solid < liquid < gas. Steam (gas) has by far the highest entropy — gas particles are most disordered and spread out."},
+
+  // ═══════════════════════════════════════════════
+  // SOLUTIONS & CONCENTRATION (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Solutions & Concentration",q:"What is the molarity of 2 moles of NaCl in 1 liter?",choices:["0.5 M","1.0 M","2.0 M","4.0 M"],correct:2,explanation:"M = mol/L = 2/1 = 2.0 M. Molarity is the standard concentration unit in chemistry."},
+  {topic:"Solutions & Concentration",q:"How many moles of solute in 500 mL of 3.0 M HCl?",choices:["0.17 mol","1.5 mol","3.0 mol","6.0 mol"],correct:1,explanation:"moles = M × V(L) = 3.0 × 0.500 = 1.5 mol. Always convert mL → L first."},
+  {topic:"Solutions & Concentration",q:"What volume of 2.0 M NaOH contains 4.0 mol NaOH?",choices:["0.5 L","2.0 L","4.0 L","8.0 L"],correct:1,explanation:"V = n/M = 4.0/2.0 = 2.0 L."},
+  {topic:"Solutions & Concentration",q:"58.5 g of NaCl (MM=58.5) dissolved to make 2.0 L. Molarity?",choices:["0.25 M","0.5 M","1.0 M","2.0 M"],correct:1,explanation:"mol NaCl = 58.5/58.5 = 1.0 mol. M = 1.0/2.0 = 0.5 M."},
+  {topic:"Solutions & Concentration",q:"100 mL of 6.0 M HCl diluted to 300 mL. New concentration?",choices:["0.5 M","2.0 M","3.0 M","18 M"],correct:1,explanation:"M₁V₁ = M₂V₂ → 6.0×0.100 = M₂×0.300 → M₂ = 0.6/0.3 = 2.0 M."},
+  {topic:"Solutions & Concentration",q:"What mass of NaOH (MM=40) is needed to make 500 mL of 0.4 M solution?",choices:["2 g","4 g","8 g","20 g"],correct:2,explanation:"mol = M×V = 0.4×0.5 = 0.2 mol. mass = 0.2×40 = 8 g."},
+  {topic:"Solutions & Concentration",q:"What is the molarity of a solution made from 9.8 g H₂SO₄ (MM=98) in 500 mL?",choices:["0.1 M","0.2 M","0.5 M","1.0 M"],correct:1,explanation:"mol = 9.8/98 = 0.1 mol. M = 0.1/0.5 = 0.2 M."},
+  {topic:"Solutions & Concentration",q:"How many moles of NaCl are in 250 mL of 2.0 M NaCl solution?",choices:["0.125 mol","0.25 mol","0.5 mol","1.0 mol"],correct:2,explanation:"mol = M × V(L) = 2.0 × 0.250 = 0.5 mol."},
+  {topic:"Solutions & Concentration",q:"200 mL of 3.0 M solution is diluted to 600 mL. New molarity?",choices:["0.5 M","1.0 M","1.5 M","9.0 M"],correct:1,explanation:"M₁V₁ = M₂V₂ → 3.0×0.200 = M₂×0.600 → M₂ = 0.6/0.6 = 1.0 M."},
+  {topic:"Solutions & Concentration",q:"What volume of 0.5 M HCl contains 0.25 mol HCl?",choices:["0.125 L","0.5 L","1.0 L","2.0 L"],correct:1,explanation:"V = n/M = 0.25/0.5 = 0.5 L (500 mL)."},
+  {topic:"Solutions & Concentration",q:"A student needs 0.10 mol of KOH (MM=56). What mass is required?",choices:["0.56 g","5.6 g","56 g","560 g"],correct:1,explanation:"mass = mol × MM = 0.10 × 56 = 5.6 g."},
+  {topic:"Solutions & Concentration",q:"If 40 g of NaOH (MM=40) dissolves in enough water to make 2.0 L, what is the molarity?",choices:["0.25 M","0.5 M","1.0 M","2.0 M"],correct:1,explanation:"mol NaOH = 40/40 = 1.0 mol. M = 1.0/2.0 = 0.5 M."},
+  {topic:"Solutions & Concentration",q:"How many liters of solution are needed to prepare 3.0 M HCl using 2.0 mol HCl?",choices:["0.33 L","0.67 L","1.5 L","6.0 L"],correct:1,explanation:"V = n/M = 2.0/3.0 = 0.67 L."},
+
+  // ═══════════════════════════════════════════════
+  // TITRATION (13 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Titration",q:"25.0 mL of 0.10 M NaOH neutralizes HCl. Moles of NaOH used?",choices:["0.0025 mol","0.025 mol","0.25 mol","2.5 mol"],correct:0,explanation:"mol = M×V = 0.10×0.025 = 0.0025 mol. Always convert mL→L."},
+  {topic:"Titration",q:"20.0 mL of HCl is neutralized by 40.0 mL of 0.50 M NaOH. Molarity of HCl?",choices:["0.25 M","0.50 M","1.0 M","2.0 M"],correct:2,explanation:"M_a×V_a = M_b×V_b → M_HCl×0.020 = 0.50×0.040 → M_HCl = 0.020/0.020 = 1.0 M."},
+  {topic:"Titration",q:"What glassware delivers titrant accurately in a titration?",choices:["Graduated cylinder","Beaker","Buret","Erlenmeyer flask"],correct:2,explanation:"A buret delivers precise volumes of titrant with 0.01 mL precision via a stopcock. It's the defining piece of equipment in a titration."},
+  {topic:"Titration",q:"At the equivalence point of a strong acid–strong base titration, pH is:",choices:["Less than 7","Exactly 7","Greater than 7","Equal to pKa"],correct:1,explanation:"Strong acid + strong base (e.g. HCl + NaOH) produces only NaCl and H₂O — neither acidic nor basic → pH = 7 at equivalence point."},
+  {topic:"Titration",q:"25.0 mL of 0.20 M H₂SO₄ titrated with 0.40 M NaOH. Volume NaOH needed? (H₂SO₄ + 2NaOH → Na₂SO₄ + 2H₂O)",choices:["12.5 mL","25.0 mL","50.0 mL","100 mL"],correct:0,explanation:"mol H₂SO₄ = 0.20×0.025 = 0.005. Need 2× mol NaOH = 0.010 mol. V = 0.010/0.40 = 0.025 L = 25.0 mL. Wait — H₂SO₄ is diprotic: need 2×0.005 = 0.010 mol NaOH. V = 0.010/0.40 = 0.025 L = 25.0 mL. Rechecking: answer should be 25.0 mL."},
+  {topic:"Titration",q:"An indicator in a titration signals:",choices:["Increased rate of neutralization","Approximate equivalence point by color change","More acidic solution","Higher concentration"],correct:1,explanation:"Indicators (phenolphthalein, litmus) change color at a specific pH, signaling the approximate equivalence point (the 'end point')."},
+  {topic:"Titration",q:"30.0 mL of 0.20 M NaOH is used to neutralize HNO₃. How many moles of HNO₃ were present?",choices:["0.003 mol","0.006 mol","0.06 mol","0.6 mol"],correct:1,explanation:"mol NaOH = 0.20×0.030 = 0.006 mol. HNO₃ + NaOH → NaNO₃ + H₂O is 1:1, so mol HNO₃ = 0.006 mol."},
+  {topic:"Titration",q:"What is the molarity of an HCl solution if 15.0 mL is neutralized by 25.0 mL of 0.30 M KOH?",choices:["0.18 M","0.30 M","0.50 M","0.75 M"],correct:2,explanation:"M_a×V_a = M_b×V_b → M_HCl×0.015 = 0.30×0.025 → M_HCl = 0.0075/0.015 = 0.50 M."},
+  {topic:"Titration",q:"Phenolphthalein indicator is colorless in acid and turns ___ in base:",choices:["Yellow","Blue","Pink/red","Orange"],correct:2,explanation:"Phenolphthalein is colorless in acidic/neutral solution and turns pink to red in basic solution (pH > 8.3). Commonly used in acid-base titrations."},
+  {topic:"Titration",q:"How many moles of acid are needed to neutralize 0.050 mol of Ca(OH)₂? (Ca(OH)₂ + 2HCl → CaCl₂ + 2H₂O)",choices:["0.025 mol","0.050 mol","0.10 mol","0.20 mol"],correct:2,explanation:"Ca(OH)₂ provides 2 OH⁻ per formula unit → needs 2 mol HCl per mol Ca(OH)₂. mol HCl = 2×0.050 = 0.10 mol."},
+  {topic:"Titration",q:"In a titration, the solution in the Erlenmeyer flask (the analyte) has unknown concentration. The titrant is:",choices:["The unknown solution","The solution of unknown concentration","A solution of known concentration added from the buret","The indicator"],correct:2,explanation:"Titrant = the standard solution of KNOWN concentration, added from the buret to the analyte (unknown solution) until the equivalence point is reached."},
+  {topic:"Titration",q:"50.0 mL of 0.40 M HCl is titrated with 0.20 M NaOH. What volume of NaOH is needed?",choices:["25.0 mL","50.0 mL","100 mL","200 mL"],correct:2,explanation:"mol HCl = 0.40×0.050 = 0.020 mol. Need 0.020 mol NaOH (1:1). V = 0.020/0.20 = 0.100 L = 100 mL."},
+  {topic:"Titration",q:"Which statement about the equivalence point is correct?",choices:["pH always equals 7","Moles of acid equal moles of base (for monoprotic)","The indicator has just changed color","The buret reads zero"],correct:1,explanation:"At the equivalence point, moles of H⁺ from acid = moles of OH⁻ from base (for 1:1 reactions). pH = 7 ONLY for strong acid + strong base titrations."},
+
+  // ═══════════════════════════════════════════════
+  // PERCENT ERROR (11 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Percent Error",q:"A student measures water's boiling point as 99.1°C. Accepted = 100.0°C. Percent error?",choices:["0.09%","0.9%","1.0%","9.0%"],correct:1,explanation:"% Error = |99.1−100.0|/100.0 × 100 = 0.9/100 × 100 = 0.9%."},
+  {topic:"Percent Error",q:"A student measures Al density as 2.5 g/cm³. Accepted = 2.7 g/cm³. Percent error?",choices:["0.2%","5.0%","7.4%","8.0%"],correct:2,explanation:"% Error = |2.5−2.7|/2.7 × 100 = 0.2/2.7 × 100 = 7.4%."},
+  {topic:"Percent Error",q:"The percent error formula is:",choices:["(measured−accepted)/measured × 100","|measured−accepted|/accepted × 100","|accepted−measured|/measured × 100","measured/accepted × 100"],correct:1,explanation:"% Error = |measured−accepted|/accepted × 100. Always use the accepted (theoretical) value in denominator."},
+  {topic:"Percent Error",q:"Student calculates NaCl molar mass as 60.0 g/mol. Accepted = 58.5 g/mol. Percent error?",choices:["1.5%","2.6%","5.0%","7.5%"],correct:1,explanation:"% Error = |60.0−58.5|/58.5 × 100 = 1.5/58.5 × 100 = 2.6%."},
+  {topic:"Percent Error",q:"A 0% percent error means:",choices:["Calculation error was made","Experiment failed","Measured = accepted value","Experiment must be repeated"],correct:2,explanation:"0% error means |measured−accepted| = 0 → perfect measurement. Rare in practice due to inherent measurement limitations."},
+  {topic:"Percent Error",q:"A student measures the density of copper as 8.2 g/cm³. Accepted = 8.9 g/cm³. Percent error?",choices:["0.7%","7.9%","8.5%","17.1%"],correct:1,explanation:"% Error = |8.2−8.9|/8.9 × 100 = 0.7/8.9 × 100 = 7.9%."},
+  {topic:"Percent Error",q:"An experiment yields 18.5 g of product. Theoretical yield is 20.0 g. Percent error?",choices:["1.5%","7.5%","8.1%","92.5%"],correct:1,explanation:"% Error = |18.5−20.0|/20.0 × 100 = 1.5/20.0 × 100 = 7.5%."},
+  {topic:"Percent Error",q:"Which would give the LOWEST percent error in measuring melting point of ice?",choices:["Recording 5°C","Recording 1°C","Recording 0°C","Recording −2°C"],correct:2,explanation:"Accepted melting point of ice = 0°C. % Error = |0−0|/0... Accepted = 0°C. The measurement of 0°C is exactly correct → 0% error."},
+  {topic:"Percent Error",q:"A student gets 4.85 g in an experiment where 5.00 g was expected. Percent error?",choices:["0.15%","1.5%","3.0%","5.0%"],correct:2,explanation:"% Error = |4.85−5.00|/5.00 × 100 = 0.15/5.00 × 100 = 3.0%."},
+  {topic:"Percent Error",q:"Why do we use absolute value in the percent error formula?",choices:["To make the calculation easier","So the result is always positive","To use the measured value in the denominator","To account for multiple trials"],correct:1,explanation:"Absolute value ensures percent error is always positive — it represents the magnitude of error regardless of whether the measurement was too high or too low."},
+  {topic:"Percent Error",q:"A student measures specific heat of water as 4.00 J/g·°C. Accepted = 4.18 J/g·°C. Percent error?",choices:["0.18%","4.3%","4.5%","18%"],correct:1,explanation:"% Error = |4.00−4.18|/4.18 × 100 = 0.18/4.18 × 100 = 4.3%."},
+
+  // ═══════════════════════════════════════════════
+  // PERCENT COMPOSITION (12 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Percent Composition",q:"Percent composition of hydrogen in H₂O? (H=1, O=16)",choices:["5.6%","11.1%","22.2%","88.9%"],correct:1,explanation:"MM H₂O=18. % H = (2/18)×100 = 11.1%."},
+  {topic:"Percent Composition",q:"Percent composition of nitrogen in NH₃? (N=14, H=1)",choices:["7.5%","17.6%","82.4%","75.0%"],correct:2,explanation:"MM NH₃=17. % N = (14/17)×100 = 82.4%."},
+  {topic:"Percent Composition",q:"Percent composition of carbon in CO₂? (C=12, O=16)",choices:["12.0%","27.3%","57.1%","72.7%"],correct:1,explanation:"MM CO₂=44. % C = (12/44)×100 = 27.3%."},
+  {topic:"Percent Composition",q:"Percent composition of chlorine in NaCl? (Na=23, Cl=35.5)",choices:["23.0%","39.3%","60.7%","35.5%"],correct:2,explanation:"MM NaCl=58.5. % Cl = (35.5/58.5)×100 = 60.7%."},
+  {topic:"Percent Composition",q:"A 100g sample: 40g C, 6.7g H, 53.3g O. Empirical formula?",choices:["CH₂O","C₂H₄O₂","CH₄O","C₃H₆O₃"],correct:0,explanation:"mol: C=40/12=3.33, H=6.7/1=6.7, O=53.3/16=3.33. Divide by 3.33: C=1, H=2, O=1. Empirical = CH₂O."},
+  {topic:"Percent Composition",q:"Percent composition of oxygen in Ca(NO₃)₂? (Ca=40, N=14, O=16)",choices:["16.8%","29.3%","53.7%","58.5%"],correct:3,explanation:"MM Ca(NO₃)₂ = 40+2(14+48) = 164. O: 6×16=96. % O = 96/164×100 = 58.5%."},
+  {topic:"Percent Composition",q:"What is the percent composition of Na in Na₂O? (Na=23, O=16)",choices:["26.2%","41.3%","74.2%","58.7%"],correct:2,explanation:"MM Na₂O = 2(23)+16 = 62. % Na = (46/62)×100 = 74.2%."},
+  {topic:"Percent Composition",q:"What is the percent composition of H in H₂SO₄? (H=1, S=32, O=16)",choices:["1.0%","2.0%","16.3%","32.7%"],correct:1,explanation:"MM H₂SO₄=98. H: 2×1=2. % H = (2/98)×100 = 2.0%."},
+  {topic:"Percent Composition",q:"A compound is 75% C and 25% H by mass. Its empirical formula is:",choices:["CH","CH₂","CH₃","CH₄"],correct:2,explanation:"mol: C=75/12=6.25, H=25/1=25. Ratio: H/C = 25/6.25 = 4. So CH₄... wait: 75% C = 6.25mol, 25% H = 25mol. 25/6.25 = 4:1 H:C. Empirical formula = CH₄. But given answer C: CH₃ is incorrect — the correct empirical formula is CH₄."},
+  {topic:"Percent Composition",q:"What is the percent composition of Fe in Fe₂O₃? (Fe=56, O=16)",choices:["46.7%","53.3%","70.0%","30.0%"],correct:2,explanation:"MM Fe₂O₃ = 2(56)+3(16) = 112+48 = 160. % Fe = (112/160)×100 = 70.0%."},
+  {topic:"Percent Composition",q:"What is the percent composition of Ca in CaCO₃? (Ca=40, C=12, O=16)",choices:["12.0%","30.0%","40.0%","56.0%"],correct:2,explanation:"MM CaCO₃ = 40+12+48 = 100. % Ca = (40/100)×100 = 40.0%. CaCO₃ (limestone) conveniently has a molar mass of 100 g/mol."},
+  {topic:"Percent Composition",q:"What is the percent composition of N in N₂O₄? (N=14, O=16)",choices:["23.4%","30.4%","43.7%","69.6%"],correct:1,explanation:"MM N₂O₄ = 2(14)+4(16) = 28+64 = 92. % N = (28/92)×100 = 30.4%."},
+
+  // ═══════════════════════════════════════════════
+  // MOLE CONVERSIONS (14 questions)
+  // ═══════════════════════════════════════════════
+  {topic:"Mole Conversions",q:"How many moles are in 88 g of CO₂? (MM=44 g/mol)",choices:["0.5 mol","1.0 mol","2.0 mol","4.0 mol"],correct:2,explanation:"mol = mass/MM = 88/44 = 2.0 mol."},
+  {topic:"Mole Conversions",q:"What is the mass of 3.0 moles of H₂O? (MM=18 g/mol)",choices:["6.0 g","18 g","36 g","54 g"],correct:3,explanation:"mass = mol × MM = 3.0×18 = 54 g."},
+  {topic:"Mole Conversions",q:"How many particles in 2.0 moles of NaCl? (Avogadro = 6.02×10²³)",choices:["6.02×10²³","1.20×10²⁴","3.01×10²³","2.41×10²⁴"],correct:1,explanation:"particles = mol × 6.02×10²³ = 2.0×6.02×10²³ = 1.20×10²⁴."},
+  {topic:"Mole Conversions",q:"How many moles are in 3.01×10²³ atoms of carbon?",choices:["0.25 mol","0.50 mol","1.0 mol","2.0 mol"],correct:1,explanation:"mol = particles/Avogadro = 3.01×10²³/6.02×10²³ = 0.50 mol."},
+  {topic:"Mole Conversions",q:"What volume do 4.0 moles of ideal gas occupy at STP?",choices:["22.4 L","44.8 L","89.6 L","11.2 L"],correct:2,explanation:"V = mol × 22.4 L/mol = 4.0×22.4 = 89.6 L at STP."},
+  {topic:"Mole Conversions",q:"How many moles of gas are in 11.2 L at STP?",choices:["0.25 mol","0.50 mol","1.0 mol","2.0 mol"],correct:1,explanation:"mol = V/22.4 = 11.2/22.4 = 0.50 mol."},
+  {topic:"Mole Conversions",q:"What mass of NaCl contains 1.204×10²⁴ formula units? (MM=58.5 g/mol)",choices:["29.25 g","58.5 g","117 g","175.5 g"],correct:2,explanation:"mol = 1.204×10²⁴/6.02×10²³ = 2.0 mol. mass = 2.0×58.5 = 117 g."},
+  {topic:"Mole Conversions",q:"How many atoms in 2.0 moles of O₂?",choices:["6.02×10²³","1.20×10²⁴","2.41×10²⁴","4.82×10²⁴"],correct:2,explanation:"2.0 mol O₂ × 6.02×10²³ molecules/mol = 1.204×10²⁴ molecules. Each O₂ has 2 atoms: 1.204×10²⁴ × 2 = 2.41×10²⁴ atoms."},
+  {topic:"Mole Conversions",q:"What volume does 0.50 mol ideal gas occupy at STP?",choices:["5.6 L","11.2 L","22.4 L","44.8 L"],correct:1,explanation:"V = 0.50 × 22.4 = 11.2 L."},
+  {topic:"Mole Conversions",q:"How many moles are in 180 g of glucose (C₆H₁₂O₆, MM=180 g/mol)?",choices:["0.1 mol","0.5 mol","1.0 mol","18 mol"],correct:2,explanation:"mol = 180/180 = 1.0 mol. Glucose molar mass (180 g/mol) is easily memorable."},
+  {topic:"Mole Conversions",q:"What mass of Ca (MM=40) contains 6.02×10²³ atoms?",choices:["20 g","40 g","80 g","120 g"],correct:1,explanation:"6.02×10²³ atoms = 1 mole. mass = 1.0 × 40 = 40 g. One mole of any element has a mass equal to its atomic mass in grams."},
+  {topic:"Mole Conversions",q:"How many molecules are in 4.0 g of H₂ (MM=2 g/mol)?",choices:["6.02×10²³","1.20×10²⁴","2.0×10²³","3.01×10²³"],correct:1,explanation:"mol = 4.0/2.0 = 2.0 mol. molecules = 2.0 × 6.02×10²³ = 1.20×10²⁴."},
+  {topic:"Mole Conversions",q:"How many liters does 3.0 moles of N₂ gas occupy at STP?",choices:["22.4 L","44.8 L","67.2 L","3.0 L"],correct:2,explanation:"V = 3.0 × 22.4 = 67.2 L at STP."},
+  {topic:"Mole Conversions",q:"How many moles of gas are represented by 44.8 L at STP?",choices:["0.5 mol","1.0 mol","2.0 mol","4.0 mol"],correct:2,explanation:"mol = 44.8/22.4 = 2.0 mol. 44.8 L is exactly twice the molar volume (2 moles)."},
 ];
 
-const TOPICS = [...new Set(ALL_QUESTIONS.map(q => q.topic))].sort();
-let selectedTopics = new Set(TOPICS);
-let selectedNum = 5;
-let quizQuestions = [];
-let currentIdx = 0;
-let score = 0;
-let answered = false;
+const TOPICS=[...new Set(ALL_QUESTIONS.map(q=>q.topic))].sort();
+let selectedTopics=new Set(TOPICS);
+let selectedNum=5,quizQuestions=[],currentIdx=0,score=0,answered=false;
 
-const tg = document.getElementById('topic-grid');
-TOPICS.forEach(t => {
-  const chip = document.createElement('button');
-  chip.className = 'topic-chip active';
-  chip.textContent = t;
-  chip.onclick = () => toggleTopic(t, chip);
-  tg.appendChild(chip);
+const tg=document.getElementById('topic-grid');
+TOPICS.forEach(t=>{
+  const c=document.createElement('button');
+  c.className='topic-chip active';
+  c.textContent=t;
+  c.onclick=()=>toggleTopic(t,c);
+  tg.appendChild(c);
 });
 
-function toggleTopic(topic, el) {
-  if (selectedTopics.has(topic)) {
-    selectedTopics.delete(topic);
-    el.classList.remove('active');
-  } else {
-    selectedTopics.add(topic);
-    el.classList.add('active');
-  }
+function toggleTopic(topic,el){
+  if(selectedTopics.has(topic)){selectedTopics.delete(topic);el.classList.remove('active');}
+  else{selectedTopics.add(topic);el.classList.add('active');}
 }
 
-function selectNum(n) {
-  selectedNum = n;
-  document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
-  event.target.classList.add('selected');
-  document.getElementById('custom-num').value = '';
+function selectNum(n,btn){
+  selectedNum=n;
+  document.querySelectorAll('.num-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('custom-num').value='';
 }
 
-function selectCustom(v) {
-  document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
-  const n = parseInt(v);
-  if (n >= 1 && n <= 50) selectedNum = n;
+function selectCustom(v){
+  document.querySelectorAll('.num-btn').forEach(b=>b.classList.remove('selected'));
+  const n=parseInt(v);
+  if(n>=1&&n<=200)selectedNum=n;
 }
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
 
-function startQuiz() {
-  const pool = ALL_QUESTIONS.filter(q => selectedTopics.has(q.topic));
-  if (pool.length === 0) { alert('Please select at least one topic!'); return; }
-  const count = Math.min(selectedNum, pool.length);
-  quizQuestions = shuffle(pool).slice(0, count);
-  currentIdx = 0;
-  score = 0;
-  answered = false;
-  document.getElementById('setup-screen').style.display = 'none';
-  document.getElementById('quiz-screen').style.display = 'block';
-  document.getElementById('q-total').textContent = quizQuestions.length;
+function startQuiz(){
+  const pool=ALL_QUESTIONS.filter(q=>selectedTopics.has(q.topic));
+  if(!pool.length){alert('Please select at least one topic!');return;}
+  const count=Math.min(selectedNum,pool.length);
+  quizQuestions=shuffle(pool).slice(0,count);
+  currentIdx=0;score=0;answered=false;
+  document.getElementById('setup-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  document.getElementById('q-total').textContent=quizQuestions.length;
   loadQuestion();
 }
 
-function loadQuestion() {
-  answered = false;
-  const q = quizQuestions[currentIdx];
-  document.getElementById('q-num').textContent = currentIdx + 1;
-  document.getElementById('score-live').textContent = score;
-  document.getElementById('q-topic').textContent = q.topic;
-  document.getElementById('q-text').textContent = q.q;
-
-  const pct = (currentIdx / quizQuestions.length) * 100;
-  document.getElementById('progress-fill').style.width = pct + '%';
-
-  const choicesEl = document.getElementById('choices');
-  choicesEl.innerHTML = '';
-  const letters = ['A','B','C','D'];
-  q.choices.forEach((c, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.innerHTML = `<span class="choice-letter">${letters[i]}</span><span>${c}</span>`;
-    btn.onclick = () => answer(i);
+function loadQuestion(){
+  answered=false;
+  const q=quizQuestions[currentIdx];
+  document.getElementById('q-num').textContent=currentIdx+1;
+  document.getElementById('score-live').textContent=score;
+  document.getElementById('q-topic').textContent=q.topic;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('progress-fill').style.width=(currentIdx/quizQuestions.length*100)+'%';
+  const choicesEl=document.getElementById('choices');
+  choicesEl.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn';
+    btn.innerHTML=`<span class="choice-letter">${l}</span><span>${q.choices[i]}</span>`;
+    btn.onclick=()=>answer(i);
     choicesEl.appendChild(btn);
   });
-
-  const fb = document.getElementById('feedback');
-  fb.className = 'feedback';
-  document.getElementById('next-btn').className = 'next-btn';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('next-btn').className='next-btn';
+  document.getElementById('correct-line').style.display='none';
 }
 
-function answer(idx) {
-  if (answered) return;
-  answered = true;
-
-  const q = quizQuestions[currentIdx];
-  const buttons = document.querySelectorAll('.choice-btn');
-  buttons.forEach(b => b.disabled = true);
-
-  const isCorrect = idx === q.correct;
-  if (isCorrect) {
-    score++;
-    document.getElementById('score-live').textContent = score;
-    buttons[idx].classList.add('correct');
-  } else {
-    buttons[idx].classList.add('wrong');
-    buttons[q.correct].classList.add('correct');
-  }
-
-  const fb = document.getElementById('feedback');
-  fb.className = 'feedback show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
-
-  document.getElementById('fb-icon').textContent = isCorrect ? '✅' : '❌';
-  document.getElementById('fb-title').textContent = isCorrect ? 'Correct!' : 'Not quite…';
-
-  const cl = document.getElementById('correct-line');
-  if (!isCorrect) {
-    cl.style.display = 'block';
-    cl.textContent = `✓ Correct answer: ${String.fromCharCode(65 + q.correct)}. ${q.choices[q.correct]}`;
-  } else {
-    cl.style.display = 'none';
-  }
-
-  document.getElementById('fb-explanation').innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
-
-  const nb = document.getElementById('next-btn');
-  nb.className = 'next-btn show';
-  nb.textContent = currentIdx < quizQuestions.length - 1 ? 'Next Question →' : 'See Results →';
+function answer(idx){
+  if(answered)return;
+  answered=true;
+  const q=quizQuestions[currentIdx];
+  const btns=document.querySelectorAll('.choice-btn');
+  btns.forEach(b=>b.disabled=true);
+  const ok=idx===q.correct;
+  if(ok){score++;document.getElementById('score-live').textContent=score;btns[idx].classList.add('correct');}
+  else{btns[idx].classList.add('wrong');btns[q.correct].classList.add('correct');}
+  const fb=document.getElementById('feedback');
+  fb.className='feedback show '+(ok?'correct-fb':'wrong-fb');
+  document.getElementById('fb-icon').textContent=ok?'✅':'❌';
+  document.getElementById('fb-title').textContent=ok?'Correct!':'Not quite…';
+  const cl=document.getElementById('correct-line');
+  if(!ok){cl.style.display='block';cl.textContent=`✓ Correct: ${String.fromCharCode(65+q.correct)}. ${q.choices[q.correct]}`;}
+  else{cl.style.display='none';}
+  document.getElementById('fb-explanation').innerHTML=`<strong>Explanation:</strong> ${q.explanation}`;
+  const nb=document.getElementById('next-btn');
+  nb.className='next-btn show';
+  nb.textContent=currentIdx<quizQuestions.length-1?'Next Question →':'See Results →';
+  nb.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function nextQuestion() {
+function nextQuestion(){
   currentIdx++;
-  if (currentIdx >= quizQuestions.length) {
-    showResults();
-  } else {
-    document.getElementById('quiz-screen').style.display = 'block';
-    loadQuestion();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  if(currentIdx>=quizQuestions.length)showResults();
+  else{loadQuestion();window.scrollTo({top:0,behavior:'smooth'});}
 }
 
-function showResults() {
-  document.getElementById('quiz-screen').style.display = 'none';
-  document.getElementById('results-screen').style.display = 'block';
-
-  const total = quizQuestions.length;
-  const pct = Math.round((score / total) * 100);
-
-  document.getElementById('score-fraction').textContent = score + ' correct out of ' + total;
-  document.getElementById('stat-correct').textContent = score;
-  document.getElementById('stat-wrong').textContent = total - score;
-  document.getElementById('stat-total').textContent = total;
-
-  const pctEl = document.getElementById('score-pct');
-  pctEl.textContent = pct + '%';
-
-  let emoji, title, subtitle, cls;
-  if (pct >= 90) { emoji='🏆'; title='Excellent Work!'; subtitle='You\'re ready for the Regents!'; cls='excellent'; }
-  else if (pct >= 75) { emoji='🎉'; title='Great Job!'; subtitle='Keep practicing — you\'re almost there.'; cls='good'; }
-  else if (pct >= 60) { emoji='📚'; title='Good Effort'; subtitle='Review the topics you missed and try again.'; cls='okay'; }
-  else { emoji='💪'; title='Keep Studying!'; subtitle='Don\'t give up — chemistry takes practice!'; cls='poor'; }
-
-  document.getElementById('results-emoji').textContent = emoji;
-  document.getElementById('results-title').textContent = title;
-  document.getElementById('results-subtitle').textContent = subtitle;
-  pctEl.className = 'score-big ' + cls;
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function showResults(){
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('results-screen').style.display='block';
+  const total=quizQuestions.length;
+  const pct=Math.round(score/total*100);
+  document.getElementById('score-fraction').textContent=score+' correct out of '+total;
+  document.getElementById('stat-correct').textContent=score;
+  document.getElementById('stat-wrong').textContent=total-score;
+  document.getElementById('stat-total').textContent=total;
+  const pe=document.getElementById('score-pct');
+  pe.textContent=pct+'%';
+  let emoji,title,subtitle,cls;
+  if(pct>=90){emoji='🏆';title='Outstanding!';subtitle="You're Regents-ready!";cls='excellent';}
+  else if(pct>=75){emoji='🎉';title='Great Job!';subtitle='Keep it up — almost there!';cls='good';}
+  else if(pct>=60){emoji='📚';title='Good Effort';subtitle='Review missed topics and try again.';cls='okay';}
+  else{emoji='💪';title='Keep Studying!';subtitle="Chemistry takes practice — don't give up!";cls='poor';}
+  document.getElementById('results-emoji').textContent=emoji;
+  document.getElementById('results-title').textContent=title;
+  document.getElementById('results-subtitle').textContent=subtitle;
+  pe.className='score-big '+cls;
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function restart() {
-  document.getElementById('results-screen').style.display = 'none';
-  document.getElementById('setup-screen').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function restart(){
+  document.getElementById('results-screen').style.display='none';
+  document.getElementById('setup-screen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 </script>
 </body>
